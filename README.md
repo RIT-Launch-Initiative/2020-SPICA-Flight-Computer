@@ -1,2 +1,2 @@
 # 2020-SPICA-FLIGHT-COMPUTER
-IREC Flight Computer
+RIT Launch Initiative 2020-2021 IREC Flight Computer

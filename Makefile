@@ -202,7 +202,7 @@ clean:
 # flash the chip
 ######################################
 flash: erase
-	-st-flash write $(BUILD_DIR)/$(TARGET).bin 0x8000000
+	-st-flash write --reset $(BUILD_DIR)/$(TARGET).bin 0x8000000
 
 erase:
 	-st-flash erase

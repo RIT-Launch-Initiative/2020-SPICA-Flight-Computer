@@ -86,6 +86,11 @@ int main(void) {
   MX_I2C1_Init();
   MX_USART1_UART_Init();
 
+  while(1) {
+      HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_13);
+      HAL_Delay(800);
+  }
+
   while (1) {
     printf("Starting...\r\n");
 
@@ -99,18 +104,8 @@ int main(void) {
         return 0;
     }
 
-    //HAL_Delay(20);
-    //status = HAL_I2C_Master_Receive(&hi2c1, ALT_ADDR<<1, buf, 3, 100);
-    //if (status != HAL_OK) {
-    //    printf("Error reading the WHO_AM_I register\r\n");
-    //    printf("Status: %d\r\n", status);
-    //    return 0;
-    //}
-
     // prints the value of the WHO_AM_I register
     printf("Device ID: %x\r\n", buf[0]);
-
-  //}
 
     MPL3115A2 mpl;
     bool ret = mpl.begin(&hi2c1);

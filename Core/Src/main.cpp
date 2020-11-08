@@ -20,12 +20,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "i2c.h"
 #include "spi.h"
+#include "usart.h"
 #include "gpio.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-//#include "lib/MPL3115A2/MPL3115A2.h"
+#include "lib/MPL3115A2/MPL3115A2.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -50,6 +52,10 @@
 
 /* USER CODE BEGIN PV */
 
+static const uint16_t ALT_ADDR = 0xC0;      // MPL3115A2 I2C Address
+static const uint8_t WHO_AM_I_REG = 0x0C;   // MPL3115A2 WHO_AM_I Address
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -67,40 +73,55 @@ void SystemClock_Config(void);
   * @brief  The application entry point.
   * @retval int
   */
-int main(void)
-{
-  /* USER CODE BEGIN 1 */
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+int main(void) {
   HAL_Init();
 
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_SPI1_Init();
-  /* USER CODE BEGIN 2 */
+  MX_I2C1_Init();
+  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
 
-  /* USER CODE END 2 */
-  while(1) {
-      HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
-      HAL_Delay(1000);
+  HAL_StatusTypeDef status;
+  uint8_t buf[8];
+  memset(buf, 0, 8);
+
+  while (1) {
+    printf("Starting...\r\n");
+
+    // reads the WHO_AM_I register
+    status = HAL_I2C_Mem_Read(&hi2c1, ALT_ADDR, WHO_AM_I_REG, 1, buf, 1, HAL_MAX_DELAY);
+    //buf[0] = WHO_AM_I_REG;
+    //status = HAL_I2C_Master_Transmit(&hi2c1, ALT_ADDR<<1, buf, 1, 100);
+    if(status != HAL_OK) {
+        printf("Error transmitting\r\n");
+        printf("Status: %d\r\n", status);
+        return 0;
+    }
+
+    // prints the value of the WHO_AM_I register
+    printf("Device ID: %x\r\n", buf[0]);
+
+    MPL3115A2 mpl;
+    bool ret = mpl.begin(&hi2c1);
+    if(!ret) {
+        printf("Altimeter failed to begin.\r\n");
+        return 0;
+    }
+    mpl.setSeaPressure(101325);
+    float alt = -1;
+
+    while(1) {
+        alt = mpl.getAltitude()*3.28084;
+        printf("Altitude: %f ft\r\n", alt);
+        HAL_Delay(500);
+    }
+    return 0;
   }
-  /* USER CODE END 3 */
 }
 
 /**

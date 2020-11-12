@@ -27,7 +27,7 @@ void LED_loop() {
     HAL_GPIO_TogglePin(LEDPorts[i], LEDPins[i]);
 }
 
-int init() {
+int init(void) {
     while (1) {
       printf("Starting...\r\n");
 
@@ -37,6 +37,7 @@ int init() {
           printf("Altimeter failed to begin.\r\n");
           return 0;
       }
+
       //mpl.setSeaPressure(101325);
       float alt = -1;
       float temp = -1;

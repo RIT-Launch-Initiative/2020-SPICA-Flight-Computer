@@ -42,7 +42,7 @@ int main(void) {
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
 
-  return init();
+  return init(); //should never return
 }
 
 /**

@@ -66,6 +66,7 @@ Core/Src/write.c \
 
 # CPP sources
 CPP_SOURCES = \
+Core/Src/init.cpp \
 Core/Src/main.cpp \
 lib/MPL3115A2/MPL3115A2.cpp \
 

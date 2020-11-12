@@ -76,7 +76,7 @@ int main(void) {
         printf("Altimeter failed to begin.\r\n");
         return 0;
     }
-    mpl.setSeaPressure(101325);
+    //mpl.setSeaPressure(101325);
     float alt = -1;
     float temp = -1;
 

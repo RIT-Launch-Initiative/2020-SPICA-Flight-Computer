@@ -29,18 +29,37 @@ void LED_loop() {
 
 #define IMU_ADDR 0b11010111
 #define IMU_WHOAMI 0x0F
-#define IMU_MAG_ADDR 0b00111011
+#define IMU_MAG_ADDR 0b00111101
+
+#define MPL_ADDR 0xC0
+#define MPL_WHOAMI 0x0C
+
+#define HIGHG_ADDR 0x31
+#define HIGHG_WHOAMI 0x0F
 
 int init(void) {
-    uint8_t buff[1];
-    uint16_t send[1];
-    send[0] = IMU_WHOAMI;
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+
+    uint8_t buff[4];
+    memset(buff, 0, 4);
+    HAL_StatusTypeDef stat;
     while(1) {
-        HAL_I2C_Mem_Read(&hi2c1, IMU_ADDR, *send, 1, buff, 1, 200);
-        printf("imu whoami: 0x%0x\r\n", buff[0]);
-        HAL_I2C_Mem_Read(&hi2c1, IMU_MAG_ADDR, *send, 1, buff, 1, 200);
-        printf("mag whoami: 0x%0x\r\n", buff[0]);
+        LED_loop();
+        HAL_I2C_Mem_Read(&hi2c1, IMU_ADDR, IMU_WHOAMI, 1, &buff[0], 1, 200);
+        printf("accel + gyro whoami(0x68): 0x%0x\r\n", buff[0]);
         HAL_Delay(500);
+        HAL_I2C_Mem_Read(&hi2c1, IMU_MAG_ADDR, IMU_WHOAMI, 1, &buff[1], 1, 200);
+        printf("mag whoami(0x3d): 0x%0x\r\n", buff[1]);
+        HAL_Delay(500);
+        HAL_I2C_Mem_Read(&hi2c1, MPL_ADDR, MPL_WHOAMI, 1, &buff[2], 1, 200);
+        printf("mpl whoami(0xc4): 0x%0x\r\n", buff[2]);
+        HAL_Delay(500);
+        stat = HAL_I2C_Mem_Read(&hi2c1, HIGHG_ADDR, HIGHG_WHOAMI, 1, &buff[3], 1, 200);
+        //printf("status: %d\r\n", stat);
+        printf("high-g whoami(0x32): 0x%0x\r\n", buff[3]);
+        HAL_Delay(500);
+        printf("\r\n");
+        //HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
     }
     return 0;
 }

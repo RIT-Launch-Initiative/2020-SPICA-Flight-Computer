@@ -63,6 +63,7 @@ Core/Src/spi.c \
 Core/Src/i2c.c \
 Core/Src/usart.c \
 Core/Src/write.c \
+lib/H3LIS100DL/H3LIS100DL.c \
 
 # CPP sources
 CPP_SOURCES = \
@@ -70,6 +71,7 @@ Core/Src/init.cpp \
 Core/Src/main.cpp \
 lib/MPL3115A2/MPL3115A2.cpp \
 lib/LSM9DS1/LSM9DS1.cpp \
+#lib/MS5607/MS5607.cpp \
 
 # ASM sources
 ASM_SOURCES =  \

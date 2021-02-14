@@ -75,7 +75,7 @@ lib/LSM9DS1/LSM9DS1.cpp \
 
 # ASM sources
 ASM_SOURCES =  \
-startup_stm32f103xb.s
+startup_stm32f103xg.s
 
 
 #######################################

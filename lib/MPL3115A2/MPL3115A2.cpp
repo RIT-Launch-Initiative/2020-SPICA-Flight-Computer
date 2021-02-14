@@ -244,7 +244,11 @@ uint8_t MPL3115A2::read8(uint16_t a) {
   uint8_t received;
   //HAL_I2C_Master_Receive(i2c, MPL3115A2_ADDRESS<<1, &received, 1, MPL3115A2_TIMEOUT);
   HAL_StatusTypeDef status = HAL_I2C_Mem_Read(i2c, MPL3115A2_ADDRESS, a, 1, &received, 1, MPL3115A2_TIMEOUT);
-  return received;
+  if(HAL_ERROR == status) {
+      return 0;
+  } else {
+      return received;
+  }
 }
 
 /*!

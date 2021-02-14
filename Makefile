@@ -69,6 +69,7 @@ CPP_SOURCES = \
 Core/Src/init.cpp \
 Core/Src/main.cpp \
 lib/MPL3115A2/MPL3115A2.cpp \
+lib/LSM9DS1/LSM9DS1.cpp \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -119,7 +120,9 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F103xG
-
+#ifeq ($(DEBUG), 1)
+#C_DEFS := -DDEBUG
+#endif
 
 # AS includes
 AS_INCLUDES =
@@ -141,7 +144,7 @@ ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffuncti
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
 ifeq ($(DEBUG), 1)
-CFLAGS += -g -gdwarf-2
+CFLAGS += -g -gdwarf-2 
 endif
 
 

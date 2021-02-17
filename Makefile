@@ -62,7 +62,7 @@ Core/Src/adc.c \
 Core/Src/spi.c \
 Core/Src/i2c.c \
 Core/Src/usart.c \
-Core/Src/write.c \
+lib/sys/sys.c \
 lib/H3LIS100DL/H3LIS100DL.c \
 
 # CPP sources

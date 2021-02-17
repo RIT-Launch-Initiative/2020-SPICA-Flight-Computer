@@ -117,6 +117,41 @@ float MPL3115A2::getPressure() {
 }
 
 /*!
+ *  @brief  Try to read the pressure in kPa and set 'p' to the value on RET_OK
+ *  @return current status of the read, RET_OK when done, RET_BLOCKED if blocking, RET_ERROR on error
+ */
+RetType MPL3115A2::getPressure(float* p) {
+  if(read8(MPL3115A2_CTRL_REG1) & MPL3115A2_CTRL_REG1_OST) {
+      return RET_BLOCKED; // block
+  }
+
+  _ctrl_reg1.bit.ALT = 0;
+  write8(MPL3115A2_CTRL_REG1, _ctrl_reg1.reg);
+
+  _ctrl_reg1.bit.OST = 1;
+  write8(MPL3115A2_CTRL_REG1, _ctrl_reg1.reg);
+
+  if(!(read8(MPL3115A2_REGISTER_STATUS) & MPL3115A2_REGISTER_STATUS_PDR)) {
+      return RET_BLOCKED;
+  }
+
+  uint8_t received[3];
+  HAL_I2C_Mem_Read(i2c, MPL3115A2_ADDRESS, MPL3115A2_REGISTER_PRESSURE_MSB, 1, received, 3, MPL3115A2_TIMEOUT);
+
+  uint32_t pressure;
+  pressure = received[0];
+  pressure <<= 8;
+  pressure |= received[1];
+  pressure <<= 8;
+  pressure |= received[2];
+  pressure >>= 4;
+
+  *p = pressure;
+  *p /= 4.0;
+  return RET_OK;
+}
+
+/*!
  *  @brief  Gets the floating-point altitude value
  *  @return altitude reading as a floating-point value
  */
@@ -160,6 +195,38 @@ float MPL3115A2::getAltitude() {
   float altitude = alt;
   altitude /= 65536.0;
   return altitude;
+}
+
+/*!
+ *  @brief  Try to read the altitude and set 'a' to the value on RET_OK
+ *  @return RET_OK on read, RET_BLOCKING if blocking, RET_ERROR on error
+ */
+RetType MPL3115A2::getAltitude(float* a) {
+  if(read8(MPL3115A2_CTRL_REG1) & MPL3115A2_CTRL_REG1_OST) {
+      return RET_BLOCKED;
+  }
+
+  _ctrl_reg1.bit.ALT = 1;
+  write8(MPL3115A2_CTRL_REG1, _ctrl_reg1.reg);
+
+  _ctrl_reg1.bit.OST = 1;
+  write8(MPL3115A2_CTRL_REG1, _ctrl_reg1.reg);
+
+  if(!(read8(MPL3115A2_REGISTER_STATUS) &  MPL3115A2_REGISTER_STATUS_PDR)) {
+      return RET_BLOCKED;
+  }
+
+  uint8_t received[3];
+  HAL_I2C_Mem_Read(i2c, MPL3115A2_ADDRESS, MPL3115A2_REGISTER_PRESSURE_MSB, 1, received, 3, MPL3115A2_TIMEOUT);
+
+  int32_t alt;
+  alt = ((uint32_t)received[0]) << 24;  // receive DATA
+  alt |= ((uint32_t)received[1]) << 16; // receive DATA
+  alt |= ((uint32_t)received[2]) << 8;  // receive DATA
+
+  *a = alt;
+  *a /= 65536.0;
+  return RET_OK;
 }
 
 /*!
@@ -223,6 +290,36 @@ float MPL3115A2::getTemperature() {
   float temp = t;
   temp /= 16.0;
   return temp;
+}
+
+/*!
+ *  @brief  Read the temperature and set 't' on RET_OK
+ *  @return RET_OK on read, RET_BLOCKED when blocking, RET_ERROR on error
+ */
+RetType MPL3115A2::getTemperature(float* t) {
+  _ctrl_reg1.bit.OST = 1;
+  write8(MPL3115A2_CTRL_REG1, _ctrl_reg1.reg);
+
+  if(!(read8(MPL3115A2_REGISTER_STATUS) & MPL3115A2_REGISTER_STATUS_TDR)) {
+      return RET_BLOCKED;
+  }
+
+  uint8_t received[2];
+  HAL_I2C_Mem_Read(i2c, MPL3115A2_ADDRESS, MPL3115A2_REGISTER_TEMP_MSB, 1, received, 2, MPL3115A2_TIMEOUT);
+
+  int16_t temp;
+  temp = received[0];
+  temp <<= 8;
+  temp |= received[1];
+  temp >>= 4;
+
+  if (temp & 0x800) {
+    temp |= 0xF000;
+  }
+
+  *t = temp;
+  *t /= 16.0;
+  return RET_OK;
 }
 
 /*!

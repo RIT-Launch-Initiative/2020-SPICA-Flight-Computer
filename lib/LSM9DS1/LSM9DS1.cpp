@@ -24,6 +24,7 @@ Distributed as-is; no warranty is given.
 #include "lib/LSM9DS1/LSM9DS1.h"
 #include "lib/LSM9DS1/LSM9DS1_Registers.h"
 #include "lib/LSM9DS1/LSM9DS1_Types.h"
+#include "stdio.h"
 // #include <Wire.h> // Wire library is used for I2C
 // #include <SPI.h>  // SPI library is used for...SPI.
 

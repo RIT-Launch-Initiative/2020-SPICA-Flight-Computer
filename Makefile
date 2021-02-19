@@ -20,7 +20,7 @@ TARGET = SPICA
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 1 
 # optimization
 OPT = -Og
 
@@ -62,7 +62,7 @@ Core/Src/adc.c \
 Core/Src/spi.c \
 Core/Src/i2c.c \
 Core/Src/usart.c \
-Core/Src/write.c \
+lib/sys/sys.c \
 lib/H3LIS100DL/H3LIS100DL.c \
 
 # CPP sources
@@ -146,7 +146,7 @@ ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffuncti
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 
 ifeq ($(DEBUG), 1)
-CFLAGS += -g -gdwarf-2
+CFLAGS += -g -gdwarf-2 -DDEBUG
 endif
 
 
@@ -163,7 +163,7 @@ LDSCRIPT = STM32F103RGTx_FLASH.ld
 # libraries
 LIBS = -lc -lm
 LIBDIR =
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -u _printf_float
+LDFLAGS = $(MCU) -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -u _printf_float
 LDFLAGS += -specs=nosys.specs # c++ breaks without this
 
 # default action: build all

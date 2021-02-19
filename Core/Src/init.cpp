@@ -59,7 +59,7 @@ int init(void) {
         printf("high-g whoami(0x32): 0x%0x\r\n", buff[3]);
         HAL_Delay(500);
         printf("\r\n");
-        //HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
+        // HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
     }
     return 0;
 }

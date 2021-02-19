@@ -1,0 +1,3 @@
+[submodule "lib/TinyScheduler"]
+	path = lib/TinyScheduler
+	url = https://github.com/WillMerges/TinyScheduler

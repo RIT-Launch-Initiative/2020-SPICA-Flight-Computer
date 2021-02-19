@@ -17,7 +17,7 @@ int _write(int file, char *ptr, int len) {
         case 1: // this should be whatever UART the debug/camera line is
             HAL_UART_Transmit(&huart1, (uint8_t*)ptr, len, 10);
             break;
-        case 2:
+        case 2: // this is the GPS I think
             HAL_UART_Transmit(&huart3, (uint8_t*)ptr, len, 10);
             break;
         default:

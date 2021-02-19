@@ -23,6 +23,7 @@
 #define __MPL3115A2__
 
 #include "stm32f1xx_hal.h"
+#include "lib/common/common.h"
 #include <stdint.h>
 
 // was 0x60
@@ -118,6 +119,11 @@ public:
   float getAltitude(void);
   float getTemperature(void);
   void setSeaPressure(float pascal);
+
+  // non blocking read functions
+  RetType getPressure(float* p);
+  RetType getAltitude(float* a);
+  RetType getTemperature(float* t);
 
   void write8(uint16_t a, uint8_t d);
 

@@ -20,7 +20,7 @@ TARGET = SPICA
 # building variables
 ######################################
 # debug build?
-DEBUG = 1 
+DEBUG = 1
 # optimization
 OPT = -Og
 
@@ -122,9 +122,6 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F103xG
-#ifeq ($(DEBUG), 1)
-#C_DEFS := -DDEBUG
-#endif
 
 # AS includes
 AS_INCLUDES =

@@ -1,52 +1,31 @@
 #include"MTK.h"
 #include<string.h>
-#include<stdio.h>
-#include<stdlib.h>
 
 #define NEXT data = strchr(data, ',') + 1
-// MTK3339 commands take the form $PMTK<command id>,<data>*<checksum hex char>\r\n
+
+// MTK3339 commands take the form $PMTK<command id>,<data>*<checksum byte as hex>\r\n
 #define COMMAND_HEAD "$PMTK"
 #define COMMAND_TAIL_FORM "*%X\r\n"
 
-// for debugging
-#define NMEA_OUTPUT_TEST "314,1,1,1,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0" 
-#define NMEA_RATE_TEST "220,1000"
-#define GGA_TEST "$GPGGA,115739.00,4158.8441367,N,09147.4416929,W,4,13,0.9,255.747,M,-32.00,M,01,0000*6E"
-int main()
-{
-	char* output_cmd = generate_command(NMEA_OUTPUT_TEST);
-	printf("Output command: %s\n", output_cmd); // expected checksum 1F
-	free(output_cmd);
-	
-	char* rate_cmd = generate_command(NMEA_RATE_TEST);
-	printf("Rate command: %s\n", rate_cmd);
-	free(rate_cmd);
-
-	struct gga test = parse_gga(GGA_TEST);
-	printf("Time: %s\nLat: %+02ddeg %fmin\nLong: %+03ddeg %fmin\nFix: %d, Sattelites: %d\n",
-			test.time, // 115739.00
-			test.latitude.degrees, test.latitude.minutes, // +41deg 58.8441367min
-			test.longitude.degrees, test.longitude.minutes,// -091deg 47.4416929min
-			test.fix, test.sat_count); // fix 4, sat 13
-	return 0;
-}
+// The GGA data is preceded by $GPGGA,
+#define GGA_HEAD "$GPGGA,"
 
 char* generate_command(char* data)
 {
 	size_t data_len = strlen(data) + strlen(COMMAND_HEAD) + strlen(COMMAND_TAIL_FORM);
 	char* out = malloc(data_len + 1);
 	sprintf(out, "%s%s", COMMAND_HEAD, data); // writes head and data
-	unsigned char checksum = get_checksum(out);
+	byte_t checksum = get_checksum(out);
 	sprintf(strchr(out, '\0'), COMMAND_TAIL_FORM, checksum); // writes tail to end
 	return out;
 }
 
 
-struct gga parse_gga(char* nmea_output)
+gga_packet_t parse_gga(char* nmea_output)
 {
-	struct gga parsed;
+	gga_packet_t parsed;
 
-	char* data = strstr(nmea_output, "GPGGA,") + strlen("GPGGA,");
+	char* data = strstr(nmea_output, GGA_HEAD) + strlen(GGA_HEAD);
 	
 	memset(parsed.time, 9, '0');
 	strncpy(parsed.time, data, 9);
@@ -82,9 +61,9 @@ struct gga parse_gga(char* nmea_output)
 	return parsed;
 }
 
-unsigned char get_checksum(char * command)
+byte_t get_checksum(char * command)
 {
-	unsigned char checksum = 0;
+	byte_t checksum = 0;
 	for(int i = 1; command[i]; i++)
 	{
 		// printf("XOR with \'%c\'", command[i]);

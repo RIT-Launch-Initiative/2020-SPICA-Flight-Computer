@@ -1,21 +1,27 @@
 // #include "main.h"
 
+#include<stdlib.h>
+#include<stdio.h>
+
 #define NMEA_OUTPUT_DEFAULT "314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
 #define NMEA_RATE_DEFAULT "220,1000"
 
-struct angle
+typedef unsigned char byte_t;
+
+typedef struct angle
 {
 	int degrees; // N positive
 	double minutes; // E positive
-};
-struct gga 
+} angle_t;
+
+typedef struct gga 
 {
 	char time[10]; // as HH:mm:ss
-	struct angle latitude;
-	struct angle longitude;
+	angle_t latitude;
+	angle_t longitude;
 	int fix;
 	int sat_count;
-};
+} gga_packet_t;
 
 /* SETUP: (SEND NOT IMPLEMENTED)
  * char* output_set = generate_command(NMEA_OUTPUT_DEFAULT);

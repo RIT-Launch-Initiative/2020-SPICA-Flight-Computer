@@ -1,9 +1,11 @@
-// #include "main.h"
+#include "main.h"
 
 #include<stdlib.h>
 #include<stdio.h>
 
-#define NMEA_OUTPUT_DEFAULT "314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+// GGA only
+#define NMEA_OUTPUT_DEFAULT "314,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
+// Update rate 1 Hz
 #define NMEA_RATE_DEFAULT "220,1000"
 
 typedef unsigned char byte_t;
@@ -35,16 +37,16 @@ typedef struct gga
 /* READ STRING CONTAINING GGA SENTENCE: (READ NOT IMPLEMENTED)
  * char* output = read_nmea();
  * struct gga data = parse_gga(output); 
+ * free(output);
 */
 
 char* generate_command(char* data); // null-terminated data string (use defaults)
 	// Calculates checksum, formats
 	// ALLOCATES HEAP MEMORY
 void send(char* command); // null-terminated command string
-	// sends command using fprintf(2, command, n)
+	// sends command using fprintf(2, command, strlen(command))
 char* read_nmea();
-	// reads from chipset into buffer using HAL_UART_Receive_IT(handle, return char, length)
-	// TODO: figure out what the handle is
-	// TODO: figure out how long the return string is
+	// reads using fscanf(char*, "$GPGGA,%s\r\n", char*);
+	// ALLOCATES HEAP MEMORY
 struct gga parse_gga(char* nmea); // null-terminated output from read_nmea
-unsigned char get_checksum(char* command); // command is a null-terminated string
+byte_t get_checksum(char* command); // command is a null-terminated string

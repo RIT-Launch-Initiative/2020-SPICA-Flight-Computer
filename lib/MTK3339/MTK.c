@@ -10,6 +10,8 @@
 // The GGA data is preceded by $GPGGA,
 #define GGA_HEAD "$GPGGA,"
 
+#define MTK3339_DESC 2
+
 char* generate_command(char* data)
 {
 	size_t data_len = strlen(data) + strlen(COMMAND_HEAD) + strlen(COMMAND_TAIL_FORM);
@@ -75,10 +77,16 @@ byte_t get_checksum(char * command)
 
 void send(char* command)
 {
-	// fprintf(2, command, strlen(command));
+	fprintf(2, command, strlen(command));
 }
 
 char* read_nmea()
 {
-	return NULL;
+	FILE* nmea = fdopen(MTK3339_DESC, "r");
+	char* packet = malloc(256);
+	strcpy(packet, GGA_HEAD);
+	char* data = packet + strlen(GGA_HEAD);
+	fscanf(nmea, "$GPGGA,%s\r\n", data);
+
+	return packet;
 }

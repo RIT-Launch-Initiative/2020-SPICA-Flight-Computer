@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "lib/MPL3115A2/MPL3115A2.h"
-
+#include "lib/MTK3339/MTK.h"
 
 GPIO_TypeDef* LEDPorts[4] = {LED1_GPIO_Port, LED2_GPIO_Port, LED3_GPIO_Port, LED4_GPIO_Port};
 uint16_t LEDPins[4] = {LED1_Pin, LED2_Pin, LED3_Pin, LED4_Pin};
@@ -75,7 +75,7 @@ int init(void) {
 
     while (1) {
       printf("Starting...\r\n");
-
+	  /*
       MPL3115A2 mpl;
       bool ret = mpl.begin(&hi2c1);
       if(!ret) {
@@ -84,21 +84,27 @@ int init(void) {
       }
 
       //mpl.setSeaPressure(101325);
-      float alt = -1;
+      
+	  float alt = -1;
       float temp = -1;
 
       HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-
+	  // */
+	  
+	  MTK3339::init(NMEA_OUTPUT_DEFAULT, NMEA_RATE_DEFAULT);
       while(1) {
+		  /*
           LED_loop();
-
+		  
           alt = mpl.getAltitude()*3.28084;
           printf("Altitude: %f ft\r\n", alt);
 
           temp = mpl.getTemperature();
           printf("Temperature: %f degrees C\r\n", temp);
-
-          HAL_Delay(500);
+		  // */
+		  gga_packet_t data = MTK3339::read_packet();
+		  printf("GPS data collected at %s\n", data.time);
+          HAL_Delay(1000);
       }
       return 0;
     }

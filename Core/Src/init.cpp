@@ -1,5 +1,4 @@
 #include "init.h"
-#include "tasks.h"
 
 extern "C" {
     #include "lib/TinyScheduler/ts.h"

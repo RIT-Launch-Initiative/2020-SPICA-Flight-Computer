@@ -8,10 +8,13 @@
 #include <stdio.h>
 #include <string.h>
 #include "lib/MPL3115A2/MPL3115A2.h"
+#include "lib/MTK3339/MTK.h"
 
 extern "C" {
     #include "lib/TinyScheduler/ts.h"
 }
+
+using namespace MTK3339;
 
 // needed by tiny scheduler
 long int ts_systime() {
@@ -69,6 +72,13 @@ void check_hw(tiny_task* task) {
     HAL_Delay(500);
     printf("\r\n");
     // HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
+
+    task->start_time = ts_systime() + 500; // run again in 500ms
+}
+
+void GPS_test(tiny_task_t* task) {
+    gga_packet_t data = MTK3339::read_packet();
+	printf("GPS data collected at %s\n", data.time);
 
     task->start_time = ts_systime() + 500; // run again in 500ms
 }

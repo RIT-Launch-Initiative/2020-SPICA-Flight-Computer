@@ -1,3 +1,4 @@
+
 objects = unittest.o MTK.o
 
 all: $(objects)
@@ -13,7 +14,7 @@ run:
 	./program
 
 leak:
-		valgrind --leak-check=yes ./program
+	valgrind --leak-check=yes ./program
 
 clean:
 	rm -f *.o

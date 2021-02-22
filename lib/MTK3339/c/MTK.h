@@ -1,5 +1,3 @@
-#include "main.h"
-
 #include<stdlib.h>
 #include<stdio.h>
 
@@ -18,28 +16,32 @@ typedef struct angle
 
 typedef struct gga 
 {
-	char time[10]; // as HH:mm:ss
+	char time[12]; // as HH:mm:ss.ss
 	angle_t latitude;
 	angle_t longitude;
 	int fix;
 	int sat_count;
 } gga_packet_t;
 
-/* SETUP: (SEND NOT IMPLEMENTED)
- * char* output_set = generate_command(NMEA_OUTPUT_DEFAULT);
- * send(output);
- * free(output);
- * char* rate_set = generate_command(NMEA_RATE_DEFAULT);
- * send(rate);
- * free(rate); 
+
+/* SETUP: (TODO: test send)
+ * init(NMEA_OUTPUT_DEFAULT, NMEA_RATE_DEFAULT);
 */
 
-/* READ STRING CONTAINING GGA SENTENCE: (READ NOT IMPLEMENTED)
- * char* output = read_nmea();
- * struct gga data = parse_gga(output); 
- * free(output);
+/* READ STRING CONTAINING GGA SENTENCE: (TODO: test read)
+ * gga_packet_t data = read_packet();
 */
 
+void init_gga(char* output, char* rate);
+	// generates and sends output commands
+	// frees memory allocated by generate_command()
+
+gga_packet_t read_packet();
+	// reads gga packet (unsafely), generates packet
+	// frees memory allocated by read_nmea();
+
+char* sim_gga();
+	// ALLOCATES HEAP MEMORY
 char* generate_command(char* data); // null-terminated data string (use defaults)
 	// Calculates checksum, formats
 	// ALLOCATES HEAP MEMORY

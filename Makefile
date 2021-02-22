@@ -63,14 +63,17 @@ Core/Src/spi.c \
 Core/Src/i2c.c \
 Core/Src/usart.c \
 lib/sys/sys.c \
+lib/TinyScheduler/ts.c \
 lib/H3LIS100DL/H3LIS100DL.c \
 
 # CPP sources
 CPP_SOURCES = \
 Core/Src/init.cpp \
 Core/Src/main.cpp \
+Core/src/tasks.cpp \
 lib/MPL3115A2/MPL3115A2.cpp \
 lib/LSM9DS1/LSM9DS1.cpp \
+lib/MTK3339/MTK.cpp \
 #lib/MS5607/MS5607.cpp \
 
 # ASM sources

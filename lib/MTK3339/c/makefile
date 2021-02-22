@@ -1,4 +1,3 @@
-
 objects = unittest.o MTK.o
 
 all: $(objects)

@@ -33,7 +33,7 @@ gga_packet_t MTK3339::read_packet()
 char* MTK3339::generate_command(char* data)
 {
 	size_t data_len = strlen(data) + strlen(COMMAND_HEAD) + strlen(COMMAND_TAIL_FORM);
-	char* out = malloc(data_len + 1);
+	char* out = (char*)malloc(data_len + 1);
 	sprintf(out, "%s%s", COMMAND_HEAD, data); // writes head and data
 	byte_t checksum = get_checksum(out);
 	sprintf(strchr(out, '\0'), COMMAND_TAIL_FORM, checksum); // writes tail to end
@@ -46,7 +46,7 @@ gga_packet_t MTK3339::parse_gga(char* nmea_output)
 	gga_packet_t parsed;
 
 	char* data = strstr(nmea_output, GGA_HEAD) + strlen(GGA_HEAD);
-	
+
 	memset(parsed.time, 9, '0');
 	strncpy(parsed.time, data, 9);
 
@@ -95,13 +95,13 @@ byte_t MTK3339::get_checksum(char * command)
 
 void MTK3339::send(char* command)
 {
-	fprintf(2, command, strlen(command));
+	fprintf((FILE*)2, command, strlen(command));
 }
 
 char* MTK3339::read_gga()
 {
 	FILE* nmea = fdopen(MTK3339_DESC, "r");
-	char* packet = malloc(256);
+	char* packet = (char*)malloc(256);
 	strcpy(packet, GGA_HEAD);
 	char* data = packet + strlen(GGA_HEAD);
 	fscanf(nmea, "$GPGGA,%s\r\n", data);

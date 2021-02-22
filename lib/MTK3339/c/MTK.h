@@ -47,7 +47,7 @@ char* generate_command(char* data); // null-terminated data string (use defaults
 	// ALLOCATES HEAP MEMORY
 void send(char* command); // null-terminated command string
 	// sends command using fprintf(2, command, strlen(command))
-char* read_nmea();
+char* read_gga();
 	// reads using fscanf(char*, "$GPGGA,%s\r\n", char*);
 	// ALLOCATES HEAP MEMORY
 struct gga parse_gga(char* nmea); // null-terminated output from read_nmea

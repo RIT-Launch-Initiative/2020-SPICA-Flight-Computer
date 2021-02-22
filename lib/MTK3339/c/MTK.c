@@ -141,7 +141,7 @@ void send(char* command)
 	fprintf(2, command, strlen(command));
 }
 
-char* read_nmea()
+char* read_gga()
 {
 	FILE* nmea = fdopen(MTK3339_DESC, "r");
 	char* packet = malloc(256);

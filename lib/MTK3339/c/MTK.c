@@ -145,9 +145,16 @@ char* read_gga()
 {
 	FILE* nmea = fdopen(MTK3339_DESC, "r");
 	char* packet = malloc(256);
-	strcpy(packet, GGA_HEAD);
-	char* data = packet + strlen(GGA_HEAD);
-	fscanf(nmea, "$GPGGA,%s\r\n", data);
+	
+	while (!strstr(packet, GGA_HEAD))
+	{
+		fgets(packet, 256, nmea);
+	}
 
 	return packet;
 }
+
+#undef NEXT
+#undef PUTNEXT
+#undef RANDD
+#undef PUTND

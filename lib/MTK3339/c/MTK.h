@@ -1,11 +1,9 @@
 #include<stdlib.h>
 #include<stdio.h>
-
 // GGA only
 #define NMEA_OUTPUT_DEFAULT "314,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0"
 // Update rate 1 Hz
 #define NMEA_RATE_DEFAULT "220,1000"
-
 typedef unsigned char byte_t;
 
 typedef struct angle

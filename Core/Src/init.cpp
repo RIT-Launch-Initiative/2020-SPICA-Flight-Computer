@@ -18,5 +18,11 @@ int init() {
         if(stat == HAL_OK) {
             HAL_UART_Transmit(&huart2, &echo, 1, 10);
         }
+
+        // GPS -> debug
+        stat = HAL_UART_Receive(&huart3, &echo, 1, 10);
+        if(stat == HAL_OK) {
+            HAL_UART_Transmit(&huart1, &echo, 1, 10);
+        }
     }
 }

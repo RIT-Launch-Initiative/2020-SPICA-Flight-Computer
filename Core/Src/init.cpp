@@ -17,7 +17,7 @@ extern "C" {
 // #include "lib/MPL3115A2/MPL3115A2.h"
 
 int init() {
-    MTK3339::init(NMEA_OUTPUT_DEFAULT, NMEA_RATE_DEFAULT);
+    // MTK3339::init(NMEA_OUTPUT_DEFAULT, NMEA_RATE_DEFAULT);
 
     tiny_task_t leds;
     leds.start_time = ts_systime();
@@ -29,14 +29,14 @@ int init() {
     hw_chk.priority = LOW_PRIORITY;
     hw_chk.task = &check_hw;
 
-    tiny_task_t gps;
-    gps.start_time = ts_systime();
-    gps.priority = LOW_PRIORITY;
-    gps.task = &GPS_test;
+    // tiny_task_t gps;
+    // gps.start_time = ts_systime();
+    // gps.priority = LOW_PRIORITY;
+    // gps.task = &GPS_test;
 
     ts_add(&leds);
     ts_add(&hw_chk);
-    ts_add(&gps);
+    // ts_add(&gps);
     ts_schedule(NULL, 0);
 
     return -1; // should never return

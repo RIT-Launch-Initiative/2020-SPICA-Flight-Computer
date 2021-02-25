@@ -14,7 +14,7 @@ extern "C" {
     #include "lib/TinyScheduler/ts.h"
 }
 
-using namespace MTK3339;
+// using namespace MTK3339;
 
 // needed by tiny scheduler
 long int ts_systime() {
@@ -77,8 +77,8 @@ void check_hw(tiny_task* task) {
 }
 
 void GPS_test(tiny_task_t* task) {
-    gga_packet_t data = MTK3339::read_packet();
-	printf("GPS data collected at %s\n", data.time);
-
-    task->start_time = ts_systime() + 500; // run again in 500ms
+    // gga_packet_t data = MTK3339::read_packet();
+	// printf("GPS data collected at %s\n", data.time);
+    //
+    // task->start_time = ts_systime() + 500; // run again in 500ms
 }

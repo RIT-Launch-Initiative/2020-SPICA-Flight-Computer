@@ -2,6 +2,7 @@
 #include "tasks.h"
 #include "lib/MTK3339/MTK.h"
 #include "lib/w25qxx/w25qxx.h"
+#include <stdio.h>
 
 extern "C" {
     #include "lib/TinyScheduler/ts.h"
@@ -17,12 +18,29 @@ extern "C" {
 // #include <string.h>
 // #include "lib/MPL3115A2/MPL3115A2.h"
 
+void test() {
+    printf("start\r\n");
+    uint8_t data = 0x9f;
+    uint8_t ret[3];
+    HAL_StatusTypeDef stat;
+    while(1) {
+        stat = HAL_SPI_TransmitReceive(&hspi1,&data,ret,3,100);
+        if(stat != HAL_OK) {
+            printf("err\r\n");
+        } else {
+            printf("%02x %02x %02x\r\n", ret[0], ret[1], ret[2]);
+        }
+        HAL_Delay(1000);
+    }
+}
+
 int init() {
     // MTK3339::init(NMEA_OUTPUT_DEFAULT, NMEA_RATE_DEFAULT);
-    if(!W25qxx_Init()) {
-        printf("failed to init spi flash\r\n");
-        return -1;
-    }
+    // if(!W25qxx_Init()) {
+    //     printf("failed to init spi flash\r\n");
+    //     return -1;
+    // }
+    test();
 
 
     tiny_task_t leds;

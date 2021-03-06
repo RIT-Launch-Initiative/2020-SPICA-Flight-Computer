@@ -82,7 +82,11 @@ void check_hw(tiny_task* task) {
 
 
 void SPI_flash(tiny_task_t*) {
-
+    uint8_t test;
+    W25qxx_EraseBlock(0);
+    W25qxx_WriteByte('a', 0);
+    W25qxx_ReadByte(&test, 0);
+    printf("got: %c\r\n", (char)test);
 }
 
 

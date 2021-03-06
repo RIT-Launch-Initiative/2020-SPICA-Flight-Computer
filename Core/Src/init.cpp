@@ -1,6 +1,7 @@
 #include "init.h"
 #include "tasks.h"
 #include "lib/MTK3339/MTK.h"
+#include "lib/w25qxx/w25qxx.h"
 
 extern "C" {
     #include "lib/TinyScheduler/ts.h"
@@ -18,6 +19,11 @@ extern "C" {
 
 int init() {
     // MTK3339::init(NMEA_OUTPUT_DEFAULT, NMEA_RATE_DEFAULT);
+    if(!W25qxx_Init()) {
+        printf("failed to init spi flash\r\n");
+        return -1;
+    }
+
 
     tiny_task_t leds;
     leds.start_time = ts_systime();
@@ -32,15 +38,17 @@ int init() {
     tiny_task_t spi_flash;
     spi_flash.start_time = ts_systime();
     spi_flash.priority = HIGH_PRIORITY;
+    spi_flash.task = SPI_flash;
 
     // tiny_task_t gps;
     // gps.start_time = ts_systime();
     // gps.priority = LOW_PRIORITY;
     // gps.task = &GPS_test;
 
-    ts_add(&leds);
-    ts_add(&hw_chk);
+    // ts_add(&leds);
+    // ts_add(&hw_chk);
     // ts_add(&gps);
+    ts_add(&spi_flash);
     ts_schedule(NULL, 0);
 
     return -1; // should never return

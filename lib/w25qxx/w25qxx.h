@@ -6,18 +6,18 @@
   WebSite:    http://www.github.com/NimaLTD
   Instagram:  http://instagram.com/github.NimaLTD
   Youtube:    https://www.youtube.com/channel/UCUhY7qY1klJm1d2kulr9ckw
-  
+
   Version:    1.1.1
-  
-  
+
+
   Reversion History:
-  
+
   (1.1.1)
   Fix some errors.
-  
+
   (1.1.0)
   Fix some errors.
-  
+
   (1.0.0)
   First release.
 */
@@ -41,7 +41,7 @@ typedef enum
 	W25Q128,
 	W25Q256,
 	W25Q512,
-	
+
 }W25QXX_ID_t;
 
 typedef struct
@@ -57,14 +57,14 @@ typedef struct
 	uint32_t	CapacityInKiloByte;
 	uint8_t		StatusRegister1;
 	uint8_t		StatusRegister2;
-	uint8_t		StatusRegister3;	
+	uint8_t		StatusRegister3;
 	uint8_t		Lock;
-	
+
 }w25qxx_t;
 
 extern w25qxx_t	w25qxx;
 //############################################################################
-// in Page,Sector and block read/write functions, can put 0 to read maximum bytes 
+// in Page,Sector and block read/write functions, can put 0 to read maximum bytes
 //############################################################################
 bool		W25qxx_Init(void);
 
@@ -98,4 +98,3 @@ void 		W25qxx_ReadBlock(uint8_t* pBuffer, uint32_t Block_Address, uint32_t Offse
 #endif
 
 #endif
-

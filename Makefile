@@ -65,6 +65,7 @@ Core/Src/usart.c \
 lib/sys/sys.c \
 lib/TinyScheduler/ts.c \
 lib/H3LIS100DL/H3LIS100DL.c \
+lib/w25qxx/w25qxx.c
 
 # CPP sources
 CPP_SOURCES = \

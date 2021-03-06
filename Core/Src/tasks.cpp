@@ -9,6 +9,7 @@
 #include <string.h>
 #include "lib/MPL3115A2/MPL3115A2.h"
 #include "lib/MTK3339/MTK.h"
+#include "lib/w25qxx/w25qxx.h"
 
 extern "C" {
     #include "lib/TinyScheduler/ts.h"
@@ -16,10 +17,12 @@ extern "C" {
 
 // using namespace MTK3339;
 
+
 // needed by tiny scheduler
 long int ts_systime() {
     return (long int)HAL_GetTick();
 }
+
 
 // LED cylon eye
 GPIO_TypeDef* LEDPorts[4] = {LED1_GPIO_Port, LED2_GPIO_Port, LED3_GPIO_Port, LED4_GPIO_Port};
@@ -39,6 +42,7 @@ void LED_loop(tiny_task_t* t) {
 
     t->start_time = ts_systime() + 50; // run again in 50ms
 }
+
 
 // HARDWARE CHECKING
 // TODO probably get rid of this later
@@ -75,6 +79,12 @@ void check_hw(tiny_task* task) {
 
     task->start_time = ts_systime() + 500; // run again in 500ms
 }
+
+
+void SPI_flash(tiny_task_t*) {
+
+}
+
 
 void GPS_test(tiny_task_t* task) {
     // gga_packet_t data = MTK3339::read_packet();

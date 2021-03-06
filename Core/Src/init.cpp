@@ -29,6 +29,10 @@ int init() {
     hw_chk.priority = LOW_PRIORITY;
     hw_chk.task = &check_hw;
 
+    tiny_task_t spi_flash;
+    spi_flash.start_time = ts_systime();
+    spi_flash.priority = HIGH_PRIORITY;
+
     // tiny_task_t gps;
     // gps.start_time = ts_systime();
     // gps.priority = LOW_PRIORITY;

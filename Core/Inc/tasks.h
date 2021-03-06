@@ -9,5 +9,6 @@ extern "C" {
 void LED_loop(tiny_task_t*);
 void check_hw(tiny_task_t*);
 void GPS_test(tiny_task_t*);
+void SPI_flash(tiny_task_t*);
 
 #endif

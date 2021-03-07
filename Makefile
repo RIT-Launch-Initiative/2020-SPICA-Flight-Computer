@@ -62,6 +62,7 @@ Core/Src/adc.c \
 Core/Src/spi.c \
 Core/Src/i2c.c \
 Core/Src/usart.c \
+Core/Src/dma.c \
 
 # CPP sources
 CPP_SOURCES = \

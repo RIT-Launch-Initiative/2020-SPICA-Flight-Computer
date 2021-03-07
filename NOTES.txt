@@ -1,0 +1,4 @@
+For interrupts/DMA with the GPS UART:
+
+Instead of have the HAL IRQ call the callback function when 'size' bytes have been read, have it call it when a newline is received.
+Should still check for 'size' so it doesnt overrun the buffer (return error if buffer full but newline not read)

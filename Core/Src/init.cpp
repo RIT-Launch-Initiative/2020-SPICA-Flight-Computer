@@ -40,7 +40,8 @@ int init() {
     //     printf("failed to init spi flash\r\n");
     //     return -1;
     // }
-    test();
+
+    // test();
 
 
     tiny_task_t leds;
@@ -63,10 +64,10 @@ int init() {
     // gps.priority = LOW_PRIORITY;
     // gps.task = &GPS_test;
 
-    // ts_add(&leds);
-    // ts_add(&hw_chk);
+    ts_add(&leds);
+    ts_add(&hw_chk);
     // ts_add(&gps);
-    ts_add(&spi_flash);
+    // ts_add(&spi_flash);
     ts_schedule(NULL, 0);
 
     return -1; // should never return

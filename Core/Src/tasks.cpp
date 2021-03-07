@@ -64,20 +64,20 @@ void check_hw(tiny_task* task) {
     // LED_loop();
     HAL_I2C_Mem_Read(&hi2c1, IMU_ADDR, IMU_WHOAMI, 1, &buff[0], 1, 200);
     printf("accel + gyro whoami(0x68): 0x%0x\r\n", buff[0]);
-    HAL_Delay(500);
+    // HAL_Delay(500);
     HAL_I2C_Mem_Read(&hi2c1, IMU_MAG_ADDR, IMU_WHOAMI, 1, &buff[1], 1, 200);
     printf("mag whoami(0x3d): 0x%0x\r\n", buff[1]);
-    HAL_Delay(500);
+    // HAL_Delay(500);
     HAL_I2C_Mem_Read(&hi2c1, MPL_ADDR, MPL_WHOAMI, 1, &buff[2], 1, 200);
     printf("mpl whoami(0xc4): 0x%0x\r\n", buff[2]);
-    HAL_Delay(500);
+    // HAL_Delay(500);
     HAL_I2C_Mem_Read(&hi2c1, HIGHG_ADDR, HIGHG_WHOAMI, 1, &buff[3], 1, 200);
     printf("high-g whoami(0x32): 0x%0x\r\n", buff[3]);
-    HAL_Delay(500);
+    // HAL_Delay(500);
     printf("\r\n");
     // HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
 
-    task->start_time = ts_systime() + 500; // run again in 500ms
+    task->start_time = ts_systime() + 2000; // run again in 2000ms
 }
 
 

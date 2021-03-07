@@ -35,6 +35,8 @@ void test() {
 }
 
 int init() {
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+
     // MTK3339::init(NMEA_OUTPUT_DEFAULT, NMEA_RATE_DEFAULT);
     // if(!W25qxx_Init()) {
     //     printf("failed to init spi flash\r\n");

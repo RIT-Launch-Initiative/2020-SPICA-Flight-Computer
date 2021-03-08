@@ -7,4 +7,7 @@ typedef enum {
     RET_OK
 } RetType;
 
+// defined in lib/sys/sys.c
+int sys_init();
+
 #endif

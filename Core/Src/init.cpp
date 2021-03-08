@@ -6,6 +6,7 @@
 
 extern "C" {
     #include "lib/TinyScheduler/ts.h"
+    #include "lib/common/common.h"
 }
 // #include "main.h"
 // #include "adc.h"
@@ -34,6 +35,7 @@ void test() {
     }
 }
 
+extern UART_HandleTypeDef huart1;
 int init() {
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
 
@@ -45,30 +47,33 @@ int init() {
 
     // test();
 
+    if(sys_init() < 0) {
+        HAL_UART_Transmit(&huart1, (uint8_t*)"error\r\n", 8, 100);
+    }
 
     tiny_task_t leds;
     leds.start_time = ts_systime();
     leds.priority = LOW_PRIORITY;
     leds.task = &LED_loop;
 
-    tiny_task_t hw_chk;
-    hw_chk.start_time = ts_systime();
-    hw_chk.priority = LOW_PRIORITY;
-    hw_chk.task = &check_hw;
+    // tiny_task_t hw_chk;
+    // hw_chk.start_time = ts_systime();
+    // hw_chk.priority = LOW_PRIORITY;
+    // hw_chk.task = &check_hw;
 
-    tiny_task_t spi_flash;
-    spi_flash.start_time = ts_systime();
-    spi_flash.priority = HIGH_PRIORITY;
-    spi_flash.task = SPI_flash;
+    // tiny_task_t spi_flash;
+    // spi_flash.start_time = ts_systime();
+    // spi_flash.priority = HIGH_PRIORITY;
+    // spi_flash.task = SPI_flash;
 
-    // tiny_task_t gps;
-    // gps.start_time = ts_systime();
-    // gps.priority = LOW_PRIORITY;
-    // gps.task = &GPS_test;
+    tiny_task_t gps;
+    gps.start_time = ts_systime();
+    gps.priority = LOW_PRIORITY;
+    gps.task = &GPS_test;
 
     ts_add(&leds);
-    ts_add(&hw_chk);
-    // ts_add(&gps);
+    // ts_add(&hw_chk);
+    ts_add(&gps);
     // ts_add(&spi_flash);
     ts_schedule(NULL, 0);
 

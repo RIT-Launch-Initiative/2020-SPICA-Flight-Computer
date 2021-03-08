@@ -1,3 +1,3 @@
 #!/bin/bash
 
-gcc *.c -I../.. -ggdb
+gcc *.c -I../.. -DDEBUG -ggdb

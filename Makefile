@@ -62,12 +62,12 @@ Core/Src/adc.c \
 Core/Src/spi.c \
 Core/Src/i2c.c \
 Core/Src/usart.c \
+Core/Src/dma.c \
 lib/sys/sys.c \
 lib/TinyScheduler/ts.c \
 lib/H3LIS100DL/H3LIS100DL.c \
 lib/w25qxx/w25qxx.c \
 lib/queue/queue.c \
-Core/Src/dma.c \
 
 # CPP sources
 CPP_SOURCES = \

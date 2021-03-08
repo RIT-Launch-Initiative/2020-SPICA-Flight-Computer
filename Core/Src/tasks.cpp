@@ -12,6 +12,7 @@
 #include "lib/w25qxx/w25qxx.h"
 
 extern "C" {
+    extern int _write(int file, char *ptr, int len);
     #include "lib/TinyScheduler/ts.h"
 }
 
@@ -56,8 +57,8 @@ void LED_loop(tiny_task_t* t) {
 #define HIGHG_ADDR 0x31
 #define HIGHG_WHOAMI 0x0F
 
+uint8_t buff[4];
 void check_hw(tiny_task* task) {
-    uint8_t buff[4];
     memset(buff, 0, 4);
     //HAL_StatusTypeDef stat;
 
@@ -73,14 +74,15 @@ void check_hw(tiny_task* task) {
     // HAL_Delay(500);
     HAL_I2C_Mem_Read(&hi2c1, HIGHG_ADDR, HIGHG_WHOAMI, 1, &buff[3], 1, 200);
     printf("high-g whoami(0x32): 0x%0x\r\n", buff[3]);
-    // HAL_Delay(500);
     printf("\r\n");
+    // HAL_Delay(500);
     // HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
 
     task->start_time = ts_systime() + 2000; // run again in 2000ms
 }
 
 
+// test SPI flash
 void SPI_flash(tiny_task_t*) {
     uint8_t test;
     W25qxx_EraseBlock(0);
@@ -89,8 +91,16 @@ void SPI_flash(tiny_task_t*) {
     printf("got: %c\r\n", (char)test);
 }
 
-
+int gps_i = 0;
+// test GPS
 void GPS_test(tiny_task_t* task) {
+    // printf("test: %i\r\n", gps_i++);
+    // _write(1, "123\r\n", 5);
+    // _write(1, "abc\r\n", 5);
+    printf("123\r\n");
+    printf("abc\r\n");
+    HAL_Delay(100);
+
     // gga_packet_t data = MTK3339::read_packet();
 	// printf("GPS data collected at %s\n", data.time);
     //

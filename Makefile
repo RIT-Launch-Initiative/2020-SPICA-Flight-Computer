@@ -66,6 +66,7 @@ lib/sys/sys.c \
 lib/TinyScheduler/ts.c \
 lib/H3LIS100DL/H3LIS100DL.c \
 lib/w25qxx/w25qxx.c \
+lib/queue/queue.c \
 Core/Src/dma.c \
 
 # CPP sources

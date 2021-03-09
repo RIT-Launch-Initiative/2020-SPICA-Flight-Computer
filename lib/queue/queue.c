@@ -10,6 +10,7 @@ typedef struct {
 } q_node_t;
 
 #ifdef DEBUG
+#include <stdio.h>
 void q_print_queue(queue_t* q) {
     printf("head: %p\n", q->head);
     printf("tail: %p\n\n", q->tail);

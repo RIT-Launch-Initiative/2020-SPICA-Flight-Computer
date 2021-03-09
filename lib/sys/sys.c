@@ -3,6 +3,7 @@
 *   Without these calling a syscall just calls an empty(?) stub
 */
 #include "main.h"
+#include "usart.h"
 #include "lib/common/common.h"
 #include "lib/queue/queue.h"
 #include <stdint.h>
@@ -12,24 +13,10 @@
 #define enable_irq __ASM volatile ("cpsie i" : : : "memory");
 #define disable_irq __ASM volatile ("cpsid i" : : : "memory");
 
-extern UART_HandleTypeDef huart1;
-extern UART_HandleTypeDef huart2;
-extern UART_HandleTypeDef huart3;
-
-// okay to initiate a read?
-int read1 = 1;
-int read2 = 1;
-int read3 = 1;
-
 // okay to initiate a write?
 int write1 = 1;
 int write2 = 1;
 int write3 = 1;
-
-// read queues
-queue_t* qr1;
-queue_t* qr2;
-queue_t* qr3;
 
 // write queues
 queue_t* qw1;
@@ -48,15 +35,12 @@ char* wptr3;
 int sys_init() {
     // initialize queues
     // TODO perhaps sort and add priorities?
-    qr1 = q_mkqueue(NULL);
-    qr2 = q_mkqueue(NULL);
-    qr3 = q_mkqueue(NULL);
     qw1 = q_mkqueue(NULL);
     qw2 = q_mkqueue(NULL);
     qw3 = q_mkqueue(NULL);
 
     // something didn't initialize
-    if(!qr1 || !qr2 || !qr3 || !qw1 || !qw2 || !qw3) {
+    if(!qw1 || !qw2 || !qw3) {
         return -1;
     }
 
@@ -97,25 +81,13 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 
 // RX complete, called by the HAL UART IRQ
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    void* next = NULL;
-    if(huart == &huart1) {
-        read1 = 1;
-        next = q_dequeue(qr1);
-    } else if(huart == &huart2) {
-        read2 = 1;
-        next = q_dequeue(qr2);
-    } else if(huart == &huart3) {
-        read3 = 1;
-        next = q_dequeue(qr3);
-    }
-
-    if(next) {
-        HAL_UART_Receive_DMA(huart, ((msg_node_t*)next)->data, ((msg_node_t*)next)->len);
-        free(next);
-    }
+    // TODO
 }
 
 
+// retarget _write for stdio functions to use
+// nonblocking, initiates a DMA transfer or queues it if the UART controller is busy
+// if an error happens it likely won't caught since the function will have already returned
 int _write(int file, char *ptr, int len) {
     msg_node_t* msg = (msg_node_t*)malloc(sizeof(msg_node_t));
     msg->data = (uint8_t*)malloc(sizeof(char) * len);
@@ -162,48 +134,34 @@ int _write(int file, char *ptr, int len) {
     return len;
 }
 
-
-// TODO this maybe should actually be blocking??
-// or just store every character in a buffer somewhere and pull off of that
+// read a certain amount of characters (blocking)
 int _read(int file, char* ptr, int len) {
-    msg_node_t* msg = (msg_node_t*)malloc(sizeof(msg_node_t));
-    msg->data = (uint8_t*)ptr;
-    msg->len = len;
-
     switch(file) {
         case 0: // UART 3 (XBee)
-            // HAL_UART_Receive(&huart3, (uint8_t*)ptr, len, 10);
-            if(read3) { // okay to start a rx
-                read3 = 0;
-                HAL_UART_Receive_DMA(&huart3, (uint8_t*)ptr, len);
-                free(msg);
-            } else { // busy, queue the read
-                q_enqueue(qr3, (void*)msg);
+            if(HAL_OK != HAL_UART_Receive_DMA(&huart3, (uint8_t*)ptr, len)) {
+                return -1;
             }
             break;
-        case 1: // UART 1 (Debug / Camer)
-            // HAL_UART_Receive(&huart1, (uint8_t*)ptr, len, 10);
-            if(read2) { // okay to start a rx
-                read2 = 0;
-                HAL_UART_Receive_DMA(&huart1, (uint8_t*)ptr, len);
-                free(msg);
-            } else { // busy, queue the read
-                q_enqueue(qr2, (void*)msg);
+        case 1: // UART 1 (Debug / Camera)
+            if(HAL_OK != HAL_UART_Receive_DMA(&huart1, (uint8_t*)ptr, len)) {
+                return -1;
             }
             break;
         case 2: // UART 2 (GPS)
-            // TODO perhaps change this to do a character match for '\n'?
-            // HAL_UART_Receive(&huart2, (uint8_t*)ptr, len, 10);
-            if(read2) { // okay to start a rx
-                read2 = 0;
-                HAL_UART_Receive_DMA(&huart2, (uint8_t*)ptr, len);
-                free(msg);
-            } else { // busy, queue the read
-                q_enqueue(qr2, (void*)msg);
+            if(HAL_OK != HAL_UART_Receive_DMA(&huart2, (uint8_t*)ptr, len)) {
+                return -1;
             }
             break;
         default:
             return -1;
     }
     return len;
+}
+
+// TODO should this be in another file? probably tbh
+// TODO maybe make _write be a macro
+// initiates a read from file descriptor 'file' into buffer 'ptr' of max length 'len'
+// calls function 'fcn' once 'c' is found
+void read_untilchar(int file, char* ptr, int len, char c, void (*fcn)()) {
+
 }

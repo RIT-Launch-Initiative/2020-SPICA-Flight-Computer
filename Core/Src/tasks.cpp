@@ -91,11 +91,16 @@ void SPI_flash(tiny_task_t*) {
     printf("got: %c\r\n", (char)test);
 }
 
-int gps_i = 0;
+extern "C" {
+    int _read(int file, char* ptr, int len);
+}
+
+char gps_c;
 // test GPS
 void GPS_test(tiny_task_t* task) {
     // gga_packet_t data = MTK3339::read_packet();
 	// printf("GPS data collected at %s\n", data.time);
     //
+
     // task->start_time = ts_systime() + 500; // run again in 500ms
 }

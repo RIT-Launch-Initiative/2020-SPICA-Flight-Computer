@@ -56,15 +56,15 @@ int init() {
     leds.priority = LOW_PRIORITY;
     leds.task = &LED_loop;
 
-    // tiny_task_t hw_chk;
-    // hw_chk.start_time = ts_systime();
-    // hw_chk.priority = LOW_PRIORITY;
-    // hw_chk.task = &check_hw;
+    tiny_task_t hw_chk;
+    hw_chk.start_time = ts_systime();
+    hw_chk.priority = LOW_PRIORITY;
+    hw_chk.task = &check_hw;
 
-    // tiny_task_t spi_flash;
-    // spi_flash.start_time = ts_systime();
-    // spi_flash.priority = HIGH_PRIORITY;
-    // spi_flash.task = SPI_flash;
+    tiny_task_t spi_flash;
+    spi_flash.start_time = ts_systime();
+    spi_flash.priority = HIGH_PRIORITY;
+    spi_flash.task = SPI_flash;
 
     tiny_task_t gps;
     gps.start_time = ts_systime();
@@ -72,8 +72,8 @@ int init() {
     gps.task = &GPS_test;
 
     ts_add(&leds);
-    // ts_add(&hw_chk);
-    ts_add(&gps);
+    ts_add(&hw_chk);
+    // ts_add(&gps);
     // ts_add(&spi_flash);
     ts_schedule(NULL, 0);
 

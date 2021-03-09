@@ -7,6 +7,7 @@
 #include "lib/queue/queue.h"
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define enable_irq __ASM volatile ("cpsie i" : : : "memory");
 #define disable_irq __ASM volatile ("cpsid i" : : : "memory");
@@ -34,6 +35,11 @@ queue_t* qr3;
 queue_t* qw1;
 queue_t* qw2;
 queue_t* qw3;
+
+// write pointers
+char* wptr1;
+char* wptr2;
+char* wptr3;
 
 
 // declared in common/common.h
@@ -69,12 +75,18 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
     if(huart == &huart1) {
         write1 = 1;
         next = q_dequeue(qw1);
+        free(wptr1);
+        wptr1 = (char*)((msg_node_t*)next)->data;
     } else if(huart == &huart2) {
         write2 = 1;
         next = q_dequeue(qw2);
+        free(wptr2);
+        wptr2 = (char*)((msg_node_t*)next)->data;
     } else if(huart == &huart3) {
         write3 = 1;
         next = q_dequeue(qw3);
+        free(wptr3);
+        wptr3 = (char*)((msg_node_t*)next)->data;
     }
 
     if(next) {
@@ -106,7 +118,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 int _write(int file, char *ptr, int len) {
     msg_node_t* msg = (msg_node_t*)malloc(sizeof(msg_node_t));
-    msg->data = (uint8_t*)ptr;
+    msg->data = (uint8_t*)malloc(sizeof(char) * len);
+    memcpy(msg->data, ptr, len);
     msg->len = len;
 
     disable_irq;
@@ -114,7 +127,8 @@ int _write(int file, char *ptr, int len) {
         case 0: // UART 3 (XBee)
             if(write3) { // okay to start a tx
                 write3 = 0;
-                HAL_UART_Transmit_DMA(&huart3, (uint8_t*)ptr, len);
+                wptr3 = (char*)msg->data;
+                HAL_UART_Transmit_DMA(&huart3, msg->data, len);
                 free(msg);
             } else { // busy, queue the write
                 q_enqueue(qw3, (void*)msg);
@@ -123,7 +137,8 @@ int _write(int file, char *ptr, int len) {
         case 1: // UART 1 (Debug / Camera)
             if(write1) { // okay to start a tx
                 write1 = 0;
-                HAL_UART_Transmit_DMA(&huart1, (uint8_t*)ptr, len);
+                wptr1 = (char*)msg->data;
+                HAL_UART_Transmit_DMA(&huart1, msg->data, len);
                 free(msg);
             } else { // busy, queue the write
                 q_enqueue(qw1, (void*)msg);
@@ -132,7 +147,8 @@ int _write(int file, char *ptr, int len) {
         case 2: // UART 2 (GPS)
             if(write2) { // okay to start a tx
                 write2 = 0;
-                HAL_UART_Transmit_DMA(&huart2, (uint8_t*)ptr, len);
+                wptr2 = (char*)msg->data;
+                HAL_UART_Transmit_DMA(&huart2, msg->data, len);
                 free(msg);
             } else { // busy, queue the write
                 q_enqueue(qw2, (void*)msg);
@@ -147,6 +163,8 @@ int _write(int file, char *ptr, int len) {
 }
 
 
+// TODO this maybe should actually be blocking??
+// or just store every character in a buffer somewhere and pull off of that
 int _read(int file, char* ptr, int len) {
     msg_node_t* msg = (msg_node_t*)malloc(sizeof(msg_node_t));
     msg->data = (uint8_t*)ptr;

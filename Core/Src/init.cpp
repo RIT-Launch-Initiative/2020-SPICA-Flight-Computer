@@ -53,7 +53,7 @@ int init() {
 
     tiny_task_t leds;
     leds.start_time = ts_systime();
-    leds.priority = LOW_PRIORITY;
+    leds.priority = IDLE_PRIORITY;
     leds.task = &LED_loop;
 
     tiny_task_t hw_chk;

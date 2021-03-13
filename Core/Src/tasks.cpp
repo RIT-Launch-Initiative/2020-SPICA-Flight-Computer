@@ -91,9 +91,6 @@ void SPI_flash(tiny_task_t*) {
     printf("got: %c\r\n", (char)test);
 }
 
-extern "C" {
-    int _read(int file, char* ptr, int len);
-}
 
 char gps_c;
 // test GPS

@@ -138,17 +138,17 @@ int _write(int file, char *ptr, int len) {
 int _read(int file, char* ptr, int len) {
     switch(file) {
         case 0: // UART 3 (XBee)
-            if(HAL_OK != HAL_UART_Receive_DMA(&huart3, (uint8_t*)ptr, len)) {
+            if(HAL_OK != HAL_UART_Receive(&huart3, (uint8_t*)ptr, len, 10)) {
                 return -1;
             }
             break;
         case 1: // UART 1 (Debug / Camera)
-            if(HAL_OK != HAL_UART_Receive_DMA(&huart1, (uint8_t*)ptr, len)) {
+            if(HAL_OK != HAL_UART_Receive(&huart1, (uint8_t*)ptr, len, 10)) {
                 return -1;
             }
             break;
         case 2: // UART 2 (GPS)
-            if(HAL_OK != HAL_UART_Receive_DMA(&huart2, (uint8_t*)ptr, len)) {
+            if(HAL_OK != HAL_UART_Receive(&huart2, (uint8_t*)ptr, len, 10)) {
                 return -1;
             }
             break;
@@ -156,12 +156,4 @@ int _read(int file, char* ptr, int len) {
             return -1;
     }
     return len;
-}
-
-// TODO should this be in another file? probably tbh
-// TODO maybe make _write be a macro
-// initiates a read from file descriptor 'file' into buffer 'ptr' of max length 'len'
-// calls function 'fcn' once 'c' is found
-void read_untilchar(int file, char* ptr, int len, char c, void (*fcn)()) {
-
 }

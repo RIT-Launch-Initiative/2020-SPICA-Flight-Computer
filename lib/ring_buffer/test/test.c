@@ -21,13 +21,19 @@ int main() {
     dummy[2] = 56;
 
     rbuff_memcpyin(&rb, test, 3);
-    rbuff_memcpyin(&rb, dummy, 3); // shouldn't do anything
-    rbuff_memcpyout(out, &rb, 1);
-    rbuff_memcpyin(&rb, &test[2], 1);
     rbuff_memcpyout(out, &rb, 3);
-    rbuff_memcpyout(out, &rb, 3);
+    printf("%i, %i, %i\n", out[0], out[1], out[2]); // {1, 2, 3}
 
-    printf("%i, %i, %i\n", test[0], test[1], test[2]); // {1,2,3}
-    printf("%i, %i, %i\n", out[0], out[1], out[2]); // {2,3,3}
-    printf("%i, %i, %i\n", dummy[0], dummy[1], dummy[2]); // {54,55,56}
+    rbuff_memcpyin(&rb, test, 3);
+    rbuff_memcpyin(&rb, dummy, 1);
+    rbuff_memcpyout(out, &rb, 3);
+    printf("%i, %i, %i\n", out[0], out[1], out[2]); // {2,3,54}
+
+    rbuff_memcpyin(&rb, &dummy[1], 1);
+    rbuff_memcpyout(out, &rb, 3);
+    printf("%i, %i, %i\n", out[0], out[1], out[2]); // {3,54,55}
+
+    rbuff_memcpyin(&rb, dummy, 3);
+    rbuff_memcpyout(out, &rb, 3);
+    printf("%i, %i, %i\n", out[0], out[1], out[2]); // {54,55,56}
 }

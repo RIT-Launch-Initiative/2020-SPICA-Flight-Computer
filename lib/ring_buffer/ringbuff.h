@@ -5,11 +5,10 @@
 #include <stdlib.h>
 
 typedef struct {
-    uint8_t* head; // first byte occupied at beginning
-    uint8_t* tail; // first byte free at end
+    int head; // first byte occupied at beginning
+    int tail; // first byte free at end
     uint8_t* ptr; // ptr to beginning of buffer
-    size_t allocated; // number bytes used
-    size_t size; // size used
+    int max; // max size
 } ringbuff_t;
 
 // need to pass in a buffer of size 'size' for the ring buffer to use

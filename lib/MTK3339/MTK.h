@@ -1,3 +1,6 @@
+#ifndef MTK_H
+#define MTK_H
+
 #include<stdlib.h>
 #include<stdio.h>
 
@@ -44,3 +47,4 @@ int parse_gga(char* nmea_string, gga_packet_t* gga_packet, size_t n);
 
 byte_t get_checksum(char* command); 
 	// XOR of null-terminated string after first character
+#endif

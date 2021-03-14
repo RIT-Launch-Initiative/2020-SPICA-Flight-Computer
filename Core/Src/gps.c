@@ -1,3 +1,11 @@
+/*
+*   Control code for the GPS
+*   Contains update task, callback handler, and init function
+*   GPS specific functionality is in lib/MTK3339/
+*   This file handles the UART and passing the data off
+*
+*   RIT Launch Initiative
+*/
 #include "gps.h"
 #include "usart.h"
 #include "lib/common/common.h"
@@ -17,6 +25,7 @@ unsigned char lines = 0;
 uint8_t rb_buff[GPS_BUFFER_SIZE];
 ringbuff_t rb;
 tiny_task_t gps_task;
+gga_packet_t gps_packet;
 
 
 void gps_update(tiny_task_t* task);
@@ -28,6 +37,7 @@ void gps_init() {
     gps_task.start_time = ts_systime();
     gps_task.priority = SLEEP_PRIORITY;
     gps_task.task = &gps_update;
+    init_gga(NULL, NULL);
 }
 
 // TODO check for errors on return with memcpyout
@@ -51,8 +61,13 @@ void gps_update(tiny_task_t* task) {
 
     // TODO
     // parse out buff into usable data
-    // for now blast it out the debug port
-    _write(1, (char*)buff, i);
+    parse_gga((char*)buff, &gps_packet);
+
+    #ifdef DEBUG
+    printf("time: %s, lat: %i.%f, long: %i.%f, alt: %f, fix: %i, sats: %i", gps_packet.time,
+            gps_packet.latitude.degrees, gps_packet.latitude.minutes, gps_packet.longitude.degrees,
+            gps_packet.longitude.minutes, gps_packet.alt, gps_packet.fix, gps_packet.sat_count);
+    #endif
 
     if(!lines) { // check if we have more lines to process
         task->priority = SLEEP_PRIORITY; // we can sleep the task

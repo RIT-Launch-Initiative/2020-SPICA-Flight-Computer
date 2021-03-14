@@ -32,8 +32,8 @@ void gps_send(char* data)
 	byte_t checksum = get_checksum(out);
 	sprintf(strchr(out, '\0'), COMMAND_TAIL_FORM, checksum); // writes checksum and tail to end
 	
-	printf("Command data: %s\nFull command string (length %ld): %s\n", data, strlen(out), out);
-	// fprintf(2, out, strlen(out));
+	// printf("Command data: %s\nFull command string (length %ld): %s\n", data, strlen(out), out);
+	fprintf(2, out, strlen(out));
 }
 
 int parse_gga(char* nmea_output, gga_packet_t* gga_packet, size_t n)
@@ -135,4 +135,3 @@ byte_t get_checksum(char * command)
 	}
 	return checksum;
 }
-

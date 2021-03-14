@@ -69,6 +69,7 @@ lib/H3LIS100DL/H3LIS100DL.c \
 lib/queue/queue.c \
 lib/ringbuff/ringbuff.c \
 Core/Src/gps.c \
+lib/MTK3339/MTK.c \
 # lib/w25qxx/w25qxx.c \
 
 # CPP sources
@@ -78,7 +79,6 @@ Core/Src/main.cpp \
 Core/src/tasks.cpp \
 lib/MPL3115A2/MPL3115A2.cpp \
 lib/LSM9DS1/LSM9DS1.cpp \
-# lib/MTK3339/MTK.cpp \
 #lib/MS5607/MS5607.cpp \
 
 # ASM sources

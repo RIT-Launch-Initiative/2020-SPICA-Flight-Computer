@@ -1,95 +1,92 @@
 #include"MTK.h"
 #include<string.h>
 
-#define NEXT data = strchr(data, ',') + 1
-
 // MTK3339 commands take the form $PMTK<command id>,<data>*<checksum byte as hex>\r\n
 #define COMMAND_HEAD "$PMTK"
 #define COMMAND_TAIL_FORM "*%X\r\n"
-
+#define COMMAND_MAX_LEN 64
 // The GGA data is preceded by $GPGGA,
 #define GGA_HEAD "$GPGGA,"
 
 #define MTK3339_DESC 2
 
+#define NEXT seeker = strchr(seeker, '\0') + 1
 #define PUTNEXT(x) *(seeker++) = (x)
 #define RANDD '0' + rand() % 10
 #define PUTND(n) for(int i=0; i<(n); i++) {PUTNEXT(RANDD);}
 
 void init_gga(char* output, char* rate)
 {
-	char* output_c = generate_command(output);
-	char* rate_c = generate_command(rate);
-	send(output_c);
-	send(rate_c);
-	free(output_c);
-	free(rate_c);
+	gps_send(output);
+	gps_send(rate);
 }
 
-gga_packet_t read_packet()
+void gps_send(char* data)
 {
-	char* gga_sentence = read_gga();
-	gga_packet_t data = parse_gga(gga_sentence);
-	free(gga_sentence);
-	return data;
-}
-
-char* generate_command(char* data)
-{
-	size_t data_len = strlen(data) + strlen(COMMAND_HEAD) + strlen(COMMAND_TAIL_FORM);
-	char* out = malloc(data_len + 1);
-	sprintf(out, "%s%s", COMMAND_HEAD, data); // writes head and data
+	char out[COMMAND_MAX_LEN];
+	memset(out, '\0', COMMAND_MAX_LEN);
+	strcpy(out, COMMAND_HEAD);
+	strcat(out, data);
 	byte_t checksum = get_checksum(out);
 	sprintf(strchr(out, '\0'), COMMAND_TAIL_FORM, checksum); // writes tail to end
-	return out;
+	printf("Command data: %s\nFull command string (length %ld): %s\n", data, strlen(out), out);
+	// fprintf(2, out, strlen(out));
 }
 
-gga_packet_t parse_gga(char* nmea_output)
+void parse_gga(char* nmea_output, gga_packet_t* gga_packet)
 {
-	gga_packet_t parsed;
-	char* data = strstr(nmea_output, GGA_HEAD) + strlen(GGA_HEAD);
-	
-	memset(parsed.time,'\0', 12);
-	strncpy(parsed.time, data, 2);
-	parsed.time[2] = ':';
-	strncpy(parsed.time + 3, data + 2, 2);
-	parsed.time[5] = ':';
-	strncpy(parsed.time + 6, data + 4, 5);
-	
-	char degbuf[4] = "";
-	char minbuf[20] = "";
-	// latitude (DDMM.MM ...)
+	// "$GPGGA,115739.00,4158.8441367,N,19147.4416929,W,4   ,13  ,0.9,255.747,M,,,,*"
+	//         ^time     ^lat           ^lon            ^fix ^sat     ^alt
+	// sets all ',' to null bytes
+	for (int i = 0; nmea_output[i] != '*'; i++)
+	{
+		if (nmea_output[i] == ',')
+		{
+			nmea_output[i] = '\0';
+		}
+	}
+	char* seeker = nmea_output;
+	// time
 	NEXT;
-	strncpy(degbuf, data, 2); // copies DD to degbuf
-	data += 2;
-	strncpy(minbuf, data, strchr(data, ',') - data); // copies MM.MM ... to minbuf
-	NEXT; // advances to cardinal
-	parsed.latitude.degrees = atoi(degbuf) * ((*data == 'S') ? -1 : 1);
-	parsed.latitude.minutes = atof(minbuf);
-
-	// longitude (DDDMM.MM ...)
+	printf("Time section %s:\n", seeker);
+	char* time_s = gga_packet->time;
+	time_s[11] = '\0';
+	time_s[2] = time_s[5] = ':';
+	sscanf(seeker, "%2c%2c%5s", time_s, time_s + 3, time_s + 6);
+	// latitude
 	NEXT;
-	strncpy(degbuf, data, 3); // copies DDD to degbuf
-	data += 3;
-	strncpy(minbuf, data, strchr(data, ',') - data); // copies MM.MM ... to minbuf
-	NEXT; // advances to cardinal
-
-	parsed.longitude.degrees = atoi(degbuf) * ((*data == 'W') ? -1 : 1);
-	parsed.longitude.minutes = atof(minbuf);
-
+	printf("Latitude section: %s\n", seeker);
+	angle_t* lat = &(gga_packet->latitude);
+	sscanf(seeker, "%2d%f", &(lat->degrees), &(lat->minutes));
+	NEXT;
+	lat->degrees *= (*seeker == 'N') ? 1 : -1;
+	// longitude
+	NEXT;
+	printf("Longitude section: %s\n", seeker);
+	angle_t* lon = &(gga_packet->longitude);
+	sscanf(seeker, "%3d%f", &(lon->degrees), &(lon->minutes));
+	NEXT;
+	lon->degrees *= (*seeker == 'E') ? 1 : -1;
 	// fix
 	NEXT;
-	parsed.fix = *data - '0';
-	// sat_count
-	NEXT;
-	parsed.sat_count = 10 * (data[0] - '0') + (data[1] - '0');
+	printf("Fix section: %s\n", seeker);
+	int* fix = &(gga_packet->fix);
+	sscanf(seeker, "%d", fix);
 
-	return parsed;
+	// sattelite count
+	NEXT;
+	printf("Sat count section: %s\n", seeker);
+	int* sat = &(gga_packet->sat_count);
+	sscanf(seeker, "%d", sat);
+
+	// altitude
+	NEXT; NEXT;
+	float* alt = &(gga_packet->alt);
+	sscanf(seeker, "%f", alt);
 }
 
 char* sim_gga()
 {
-	// "$GPGGA,115739.00,4158.8441367,N,19147.4416929,W,4,13,0.9,255.747,M,-32.00,M,01,0000*6E"
 	char* sentence = malloc(256);
 	strcpy(sentence, "$GPGGA,");
 	char* seeker = strchr(sentence, '\0');
@@ -136,18 +133,3 @@ byte_t get_checksum(char * command)
 	return checksum;
 }
 
-void send(char* command)
-{
-	fprintf(2, command, strlen(command));
-}
-
-char* read_gga()
-{
-	FILE* nmea = fdopen(MTK3339_DESC, "r");
-	char* packet = malloc(256);
-	strcpy(packet, GGA_HEAD);
-	char* data = packet + strlen(GGA_HEAD);
-	fscanf(nmea, "$GPGGA,%s\r\n", data);
-
-	return packet;
-}

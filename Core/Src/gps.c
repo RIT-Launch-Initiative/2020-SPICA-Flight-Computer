@@ -3,7 +3,7 @@
 #include "lib/common/common.h"
 #include "lib/ringbuff/ringbuff.h"
 #include "lib/TinyScheduler/ts.h"
-// #include "lib/MTK3339/MTK.h" // this is borked right now, TODO unbork it
+#include "lib/MTK3339/MTK.h"
 #include <stdint.h>
 #include <unistd.h>
 

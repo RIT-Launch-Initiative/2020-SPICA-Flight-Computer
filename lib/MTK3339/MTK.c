@@ -28,12 +28,12 @@ void gps_send(char* data)
 
 	strcpy(out, COMMAND_HEAD);
 	strcat(out, data);
-	
+
 	byte_t checksum = get_checksum(out);
 	sprintf(strchr(out, '\0'), COMMAND_TAIL_FORM, checksum); // writes checksum and tail to end
-	
+
 	// printf("Command data: %s\nFull command string (length %ld): %s\n", data, strlen(out), out);
-	fprintf(2, out, strlen(out));
+	fprintf((FILE*)2, out, strlen(out));
 }
 
 int parse_gga(char* nmea_output, gga_packet_t* gga_packet, size_t n)
@@ -45,7 +45,7 @@ int parse_gga(char* nmea_output, gga_packet_t* gga_packet, size_t n)
 	for (int i = 0; (nmea_output[i] != '*') && (i < n); i++)
 	{
 		if (nmea_output[i] == ',')
-		{ 
+		{
 			nmea_output[i] = '\0';
 			sections++;
 		}
@@ -86,6 +86,8 @@ int parse_gga(char* nmea_output, gga_packet_t* gga_packet, size_t n)
 	NEXT; NEXT;
 	float* alt = &(gga_packet->altitude);
 	sscanf(seeker, "%f", alt);
+
+	return 1;
 }
 
 char* sim_gga()
@@ -124,7 +126,7 @@ char* sim_gga()
 	// the rest we don't care about
 	strcpy(seeker, "X.X,420.069,M,SXX.XX,C,XX,XXXX*XX\r\n");
 	return sentence;
-}  
+}
 
 byte_t get_checksum(char * command)
 {

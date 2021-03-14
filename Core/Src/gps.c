@@ -61,12 +61,12 @@ void gps_update(tiny_task_t* task) {
 
     // TODO
     // parse out buff into usable data
-    parse_gga((char*)buff, &gps_packet);
+    parse_gga((char*)buff, &gps_packet, i);
 
     #ifdef DEBUG
     printf("time: %s, lat: %i.%f, long: %i.%f, alt: %f, fix: %i, sats: %i", gps_packet.time,
             gps_packet.latitude.degrees, gps_packet.latitude.minutes, gps_packet.longitude.degrees,
-            gps_packet.longitude.minutes, gps_packet.alt, gps_packet.fix, gps_packet.sat_count);
+            gps_packet.longitude.minutes, gps_packet.altitude, gps_packet.fix, gps_packet.sat_count);
     #endif
 
     if(!lines) { // check if we have more lines to process

@@ -25,63 +25,66 @@ void gps_send(char* data)
 {
 	char out[COMMAND_MAX_LEN];
 	memset(out, '\0', COMMAND_MAX_LEN);
+
 	strcpy(out, COMMAND_HEAD);
 	strcat(out, data);
+	
 	byte_t checksum = get_checksum(out);
-	sprintf(strchr(out, '\0'), COMMAND_TAIL_FORM, checksum); // writes tail to end
+	sprintf(strchr(out, '\0'), COMMAND_TAIL_FORM, checksum); // writes checksum and tail to end
+	
 	printf("Command data: %s\nFull command string (length %ld): %s\n", data, strlen(out), out);
 	// fprintf(2, out, strlen(out));
 }
 
-void parse_gga(char* nmea_output, gga_packet_t* gga_packet)
+int parse_gga(char* nmea_output, gga_packet_t* gga_packet, size_t n)
 {
 	// "$GPGGA,115739.00,4158.8441367,N,19147.4416929,W,4   ,13  ,0.9,255.747,M,,,,*"
 	//         ^time     ^lat           ^lon            ^fix ^sat     ^alt
 	// sets all ',' to null bytes
-	for (int i = 0; nmea_output[i] != '*'; i++)
+	int sections = 0;
+	for (int i = 0; (nmea_output[i] != '*') && (i < n); i++)
 	{
 		if (nmea_output[i] == ',')
-		{
+		{ 
 			nmea_output[i] = '\0';
+			sections++;
 		}
+	}
+	if (sections < 9) { // we read 9 fields
+		return 1;
 	}
 	char* seeker = nmea_output;
 	// time
 	NEXT;
-	printf("Time section %s:\n", seeker);
 	char* time_s = gga_packet->time;
 	time_s[11] = '\0';
 	time_s[2] = time_s[5] = ':';
 	sscanf(seeker, "%2c%2c%5s", time_s, time_s + 3, time_s + 6);
 	// latitude
 	NEXT;
-	printf("Latitude section: %s\n", seeker);
 	angle_t* lat = &(gga_packet->latitude);
 	sscanf(seeker, "%2d%f", &(lat->degrees), &(lat->minutes));
 	NEXT;
 	lat->degrees *= (*seeker == 'N') ? 1 : -1;
 	// longitude
 	NEXT;
-	printf("Longitude section: %s\n", seeker);
 	angle_t* lon = &(gga_packet->longitude);
 	sscanf(seeker, "%3d%f", &(lon->degrees), &(lon->minutes));
 	NEXT;
 	lon->degrees *= (*seeker == 'E') ? 1 : -1;
 	// fix
 	NEXT;
-	printf("Fix section: %s\n", seeker);
 	int* fix = &(gga_packet->fix);
 	sscanf(seeker, "%d", fix);
 
 	// sattelite count
 	NEXT;
-	printf("Sat count section: %s\n", seeker);
 	int* sat = &(gga_packet->sat_count);
 	sscanf(seeker, "%d", sat);
 
 	// altitude
 	NEXT; NEXT;
-	float* alt = &(gga_packet->alt);
+	float* alt = &(gga_packet->altitude);
 	sscanf(seeker, "%f", alt);
 }
 
@@ -119,14 +122,14 @@ char* sim_gga()
 	PUTND(2);
 	PUTNEXT(',');
 	// the rest we don't care about
-	strcpy(seeker, "X.X,XXX.XXX,C,SXX.XX,C,XX,XXXX*XX\r\n");
+	strcpy(seeker, "X.X,420.069,M,SXX.XX,C,XX,XXXX*XX\r\n");
 	return sentence;
-}
+}  
 
 byte_t get_checksum(char * command)
 {
 	byte_t checksum = 0;
-	for(int i = 1; command[i]; i++)
+	for(int i = 1; command[i] && (i < 64); i++)
 	{
 		checksum ^= command[i];
 	}

@@ -10,8 +10,8 @@ typedef unsigned char byte_t;
 
 typedef struct angle // 8 bytes
 {
-	int degrees; // N positive
-	float minutes; // E positive
+	int degrees; // sign here; N,E positive
+	float minutes;
 } angle_t;
 
 typedef struct gga // 40 bytes
@@ -19,7 +19,7 @@ typedef struct gga // 40 bytes
 	char time[12]; // as HH:mm:ss.ss
 	angle_t latitude;
 	angle_t longitude;
-	float alt;
+	float altitude;
 	int fix;
 	int sat_count;
 } gga_packet_t;
@@ -31,7 +31,6 @@ typedef struct gga // 40 bytes
 
 void init_gga(char* output, char* rate);
 	// generates and sends output commands
-	// frees memory allocated by generate_command()
 
 char* sim_gga();
 	// ALLOCATES HEAP MEMORY
@@ -39,8 +38,9 @@ char* sim_gga();
 void gps_send(char* data);
 	// null-terminated data string
 
-void parse_gga(char* nmea_string, gga_packet_t* gga_packet); 
-	// string containing GGA sentence (need not be null-terminated)
+int parse_gga(char* nmea_string, gga_packet_t* gga_packet, size_t n); 
+	// string containing GGA sentence (need not be null-terminated), read at most n characters
+	// returns 1 if nmea_string contains less than 9 characters
 
 byte_t get_checksum(char* command); 
-	// null-terminated string
+	// XOR of null-terminated string after first character

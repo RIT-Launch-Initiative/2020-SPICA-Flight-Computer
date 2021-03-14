@@ -1,17 +1,15 @@
 /*
-*   Retarget the nosys "syscalls"
+*   Retarget the nosys/newlib "syscalls"
 *   Without these calling a syscall just calls an empty(?) stub
 */
 #include "main.h"
 #include "usart.h"
+#include "gps.h"
 #include "lib/common/common.h"
 #include "lib/queue/queue.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define enable_irq __ASM volatile ("cpsie i" : : : "memory");
-#define disable_irq __ASM volatile ("cpsid i" : : : "memory");
 
 // okay to initiate a write?
 int write1 = 1;
@@ -27,6 +25,12 @@ queue_t* qw3;
 char* wptr1;
 char* wptr2;
 char* wptr3;
+
+// message type used for queueing messages
+typedef struct {
+    uint8_t* data;
+    uint16_t len;
+} msg_node_t;
 
 
 // declared in common/common.h
@@ -47,11 +51,6 @@ int sys_init() {
     return 1;
 }
 
-// message type
-typedef struct {
-    uint8_t* data;
-    uint16_t len;
-} msg_node_t;
 
 // TX complete, called by the HAL UART IRQ
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
@@ -79,9 +78,16 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
     }
 }
 
+
 // RX complete, called by the HAL UART IRQ
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    // TODO
+    if(huart == &huart1) {
+        // TODO (debug uart)
+    } else if(huart == &huart2) {
+        gps_RxCallback(); // from gps.c
+    } else if(huart == &huart3) {
+        // TODO (XBee uart)
+    }
 }
 
 
@@ -134,7 +140,9 @@ int _write(int file, char *ptr, int len) {
     return len;
 }
 
+
 // read a certain amount of characters (blocking)
+// probably best to stay away from (don't use stdio input functions if speed is an issue)
 int _read(int file, char* ptr, int len) {
     switch(file) {
         case 0: // UART 3 (XBee)

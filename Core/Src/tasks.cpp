@@ -12,11 +12,8 @@
 #include "lib/w25qxx/w25qxx.h"
 
 extern "C" {
-    extern int _write(int file, char *ptr, int len);
     #include "lib/TinyScheduler/ts.h"
 }
-
-// using namespace MTK3339;
 
 
 // needed by tiny scheduler
@@ -25,7 +22,7 @@ long int ts_systime() {
 }
 
 
-// LED cylon eye
+// LED cylon eye, idle task
 GPIO_TypeDef* LEDPorts[4] = {LED1_GPIO_Port, LED2_GPIO_Port, LED3_GPIO_Port, LED4_GPIO_Port};
 uint16_t LEDPins[4] = {LED1_Pin, LED2_Pin, LED3_Pin, LED4_Pin};
 int i = 1;
@@ -89,15 +86,4 @@ void SPI_flash(tiny_task_t*) {
     W25qxx_WriteByte('a', 0);
     W25qxx_ReadByte(&test, 0);
     printf("got: %c\r\n", (char)test);
-}
-
-
-char gps_c;
-// test GPS
-void GPS_test(tiny_task_t* task) {
-    // gga_packet_t data = MTK3339::read_packet();
-	// printf("GPS data collected at %s\n", data.time);
-    //
-
-    // task->start_time = ts_systime() + 500; // run again in 500ms
 }

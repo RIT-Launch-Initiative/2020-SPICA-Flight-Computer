@@ -1,4 +1,4 @@
-#include "lib/ring_buffer/ringbuff.h"
+#include "lib/ringbuff/ringbuff.h"
 #include <stdint.h>
 #include <stdlib.h>
 

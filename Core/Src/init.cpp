@@ -8,6 +8,7 @@
 extern "C" {
     #include "lib/TinyScheduler/ts.h"
     #include "lib/common/common.h"
+    #include "gps.h"
 }
 
 void test() {
@@ -42,6 +43,9 @@ int init() {
         HAL_UART_Transmit(&huart1, (uint8_t*)"error\r\n", 8, 100);
     }
 
+    gps_init();
+    ts_add(&gps_task); // from gps.h/c
+
     tiny_task_t idle;
     idle.start_time = ts_systime();
     idle.priority = IDLE_PRIORITY;
@@ -52,10 +56,10 @@ int init() {
     hw_chk.priority = LOW_PRIORITY;
     hw_chk.task = &check_hw;
 
-    tiny_task_t spi_flash;
-    spi_flash.start_time = ts_systime();
-    spi_flash.priority = HIGH_PRIORITY;
-    spi_flash.task = SPI_flash;
+    // tiny_task_t spi_flash;
+    // spi_flash.start_time = ts_systime();
+    // spi_flash.priority = HIGH_PRIORITY;
+    // spi_flash.task = SPI_flash;
 
     ts_add(&idle);
     ts_add(&hw_chk);

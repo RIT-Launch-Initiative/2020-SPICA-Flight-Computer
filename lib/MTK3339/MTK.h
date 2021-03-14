@@ -1,3 +1,6 @@
+#ifndef MTK_H
+#define MTK_H
+
 #include<stdlib.h>
 #include<stdio.h>
 
@@ -39,8 +42,10 @@ char* sim_gga();
 void gps_send(char* data);
 	// null-terminated data string
 
-void parse_gga(char* nmea_string, gga_packet_t* gga_packet); 
+void parse_gga(char* nmea_string, gga_packet_t* gga_packet);
 	// string containing GGA sentence (need not be null-terminated)
 
-byte_t get_checksum(char* command); 
+byte_t get_checksum(char* command);
 	// null-terminated string
+
+#endif

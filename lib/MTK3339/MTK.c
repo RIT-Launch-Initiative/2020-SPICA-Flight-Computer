@@ -29,7 +29,7 @@ void gps_send(char* data)
 	strcat(out, data);
 	byte_t checksum = get_checksum(out);
 	sprintf(strchr(out, '\0'), COMMAND_TAIL_FORM, checksum); // writes tail to end
-	printf("Command data: %s\nFull command string (length %ld): %s\n", data, strlen(out), out);
+	printf("Command data: %s\nFull command string (length %zu): %s\n", data, strlen(out), out);
 	// fprintf(2, out, strlen(out));
 }
 
@@ -132,4 +132,3 @@ byte_t get_checksum(char * command)
 	}
 	return checksum;
 }
-

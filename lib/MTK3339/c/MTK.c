@@ -1,14 +1,16 @@
 #include"MTK.h"
 #include<string.h>
 
-// MTK3339 commands take the form $PMTK<command id>,<data>*<checksum byte as hex>\r\n
 #define COMMAND_HEAD "$PMTK"
 #define COMMAND_TAIL_FORM "*%X\r\n"
 #define COMMAND_MAX_LEN 64
-// The GGA data is preceded by $GPGGA,
+
 #define GGA_HEAD "$GPGGA,"
+#define SEC_COUNT 10
+#define SEC_LENS {0,9,9,1,9,1,1,1,0,6}
 
 #define MTK3339_DESC 2
+
 
 #define NEXT seeker = strchr(seeker, '\0') + 1
 #define PUTNEXT(x) *(seeker++) = (x)
@@ -28,30 +30,44 @@ void gps_send(char* data)
 
 	strcpy(out, COMMAND_HEAD);
 	strcat(out, data);
-	
+
 	byte_t checksum = get_checksum(out);
 	sprintf(strchr(out, '\0'), COMMAND_TAIL_FORM, checksum); // writes checksum and tail to end
-	
-	printf("Command data: %s\nFull command string (length %ld): %s\n", data, strlen(out), out);
-	// fprintf(2, out, strlen(out));
+
+	// printf("Command data: %s\nFull command string (length %ld): %s\n", data, strlen(out), out);
+	fprintf((FILE*)2, out, strlen(out));
 }
 
 int parse_gga(char* nmea_output, gga_packet_t* gga_packet, size_t n)
 {
 	// "$GPGGA,115739.00,4158.8441367,N,19147.4416929,W,4   ,13  ,0.9,255.747,M,,,,*"
 	//         ^time     ^lat           ^lon            ^fix ^sat     ^alt
-	// sets all ',' to null bytes
-	int sections = 0;
-	for (int i = 0; (nmea_output[i] != '*') && (i < n); i++)
+
+	// run through string until a null byte or n
+	// count section length, reset on comma (set to null byte)
+	int i = 0;
+	int sec = 0;
+	int cur = 0;
+	int lens[] = SEC_LENS;
+	while (nmea_output[i] && (i < n) && (sec < SEC_COUNT))
 	{
 		if (nmea_output[i] == ',')
-		{ 
+		{
+			if (cur < lens[sec])
+			{
+				return -1; // current section too short
+			}
+			sec++;
 			nmea_output[i] = '\0';
-			sections++;
+			cur = 0;
 		}
+		cur++;
+		i++;
 	}
-	if (sections < 9) { // we read 9 fields
-		return 1;
+
+	if (sec < SEC_COUNT)
+	{
+		return -1;
 	}
 	char* seeker = nmea_output;
 	// time
@@ -86,6 +102,8 @@ int parse_gga(char* nmea_output, gga_packet_t* gga_packet, size_t n)
 	NEXT; NEXT;
 	float* alt = &(gga_packet->altitude);
 	sscanf(seeker, "%f", alt);
+
+	return 1;
 }
 
 char* sim_gga()
@@ -124,7 +142,7 @@ char* sim_gga()
 	// the rest we don't care about
 	strcpy(seeker, "X.X,420.069,M,SXX.XX,C,XX,XXXX*XX\r\n");
 	return sentence;
-}  
+}
 
 byte_t get_checksum(char * command)
 {
@@ -135,4 +153,3 @@ byte_t get_checksum(char * command)
 	}
 	return checksum;
 }
-

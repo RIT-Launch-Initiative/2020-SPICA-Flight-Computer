@@ -81,6 +81,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 
 // RX complete, called by the HAL UART IRQ
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    printf("callback\r\n");
+
     if(huart == &huart1) {
         // TODO (debug uart)
     } else if(huart == &huart2) {

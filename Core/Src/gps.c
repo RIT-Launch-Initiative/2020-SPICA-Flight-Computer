@@ -33,11 +33,14 @@ void gps_update(tiny_task_t* task);
 // initialize
 void gps_init() {
     rbuff_init(&rb, rb_buff, GPS_BUFFER_SIZE);
-    HAL_UART_Transmit_IT(&GPS_UART, &gps_char, 1);
     gps_task.start_time = ts_systime();
     gps_task.priority = SLEEP_PRIORITY;
     gps_task.task = &gps_update;
     init_gga(NULL, NULL);
+
+    // this has to be the last thing init does
+    // TODO maybe return if this isn't HAL_OK
+    HAL_UART_Receive_IT(&GPS_UART, &gps_char, 1);
 }
 
 // TODO check for errors on return with memcpyout
@@ -61,12 +64,14 @@ void gps_update(tiny_task_t* task) {
 
     // TODO
     // parse out buff into usable data
-    parse_gga((char*)buff, &gps_packet, i);
+    // parse_gga((char*)buff, &gps_packet, i);
 
     #ifdef DEBUG
-    printf("time: %s, lat: %i.%f, long: %i.%f, alt: %f, fix: %i, sats: %i", gps_packet.time,
-            gps_packet.latitude.degrees, gps_packet.latitude.minutes, gps_packet.longitude.degrees,
-            gps_packet.longitude.minutes, gps_packet.altitude, gps_packet.fix, gps_packet.sat_count);
+    buff[i] = '\0';
+    printf("%s\n", buff);
+    // printf("time: %s, lat: %i.%f, long: %i.%f, alt: %f, fix: %i, sats: %i", gps_packet.time,
+            // gps_packet.latitude.degrees, gps_packet.latitude.minutes, gps_packet.longitude.degrees,
+            // gps_packet.longitude.minutes, gps_packet.altitude, gps_packet.fix, gps_packet.sat_count);
     #endif
 
     if(!lines) { // check if we have more lines to process
@@ -82,4 +87,6 @@ void gps_RxCallback() {
         lines++; // we have another line to handle!
         gps_task.priority = LOW_PRIORITY; // TODO maybe make this dynamic
     }
+
+    HAL_UART_Receive_IT(&GPS_UART, &gps_char, 1);
 }

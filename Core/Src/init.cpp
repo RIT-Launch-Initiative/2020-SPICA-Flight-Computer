@@ -56,7 +56,9 @@ int init() {
     ts_add(&idle);
     // ts_add(&hw_chk);
     // ts_add(&spi_flash);
-    ts_schedule(NULL, 0);
+
+    // start the scheduler
+    ts_schedule();
 
     return -1; // should never return
 }

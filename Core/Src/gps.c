@@ -32,6 +32,8 @@ void gps_update(tiny_task_t* task);
 
 // initialize
 void gps_init() {
+    printf("gps init\r\n");
+
     rbuff_init(&rb, rb_buff, GPS_BUFFER_SIZE);
     gps_task.start_time = ts_systime();
     gps_task.priority = SLEEP_PRIORITY;
@@ -40,11 +42,14 @@ void gps_init() {
 
     // this has to be the last thing init does
     // TODO maybe return if this isn't HAL_OK
-    HAL_UART_Receive_IT(&GPS_UART, &gps_char, 1);
+    if(HAL_OK != HAL_UART_Receive_IT(&GPS_UART, &gps_char, 1)) {
+        printf("gps init failed!\r\n");
+    }
 }
 
 // TODO check for errors on return with memcpyout
 void gps_update(tiny_task_t* task) {
+    printf("gps update\r\n");
     disable_irq;
     lines--; // event is being handled
     enable_irq;

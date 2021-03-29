@@ -40,17 +40,17 @@ int init() {
 
     tiny_task_t idle;
     idle.start_time = ts_systime();
-    idle.priority = IDLE_PRIORITY;
+    idle.default_priority = IDLE_PRIORITY;
     idle.task = &LED_loop;
 
     // tiny_task_t hw_chk;
     // hw_chk.start_time = ts_systime();
-    // hw_chk.priority = LOW_PRIORITY;
+    // hw_chk.default_priority = LOW_PRIORITY;
     // hw_chk.task = &check_hw;
 
     // tiny_task_t spi_flash;
     // spi_flash.start_time = ts_systime();
-    // spi_flash.priority = HIGH_PRIORITY;
+    // spi_flash.default_priority = HIGH_PRIORITY;
     // spi_flash.task = SPI_flash;
 
     ts_add(&idle);

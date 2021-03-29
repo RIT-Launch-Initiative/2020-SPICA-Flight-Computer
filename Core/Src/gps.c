@@ -32,8 +32,6 @@ void gps_update(tiny_task_t* task);
 
 // initialize
 void gps_init() {
-    printf("gps init\r\n");
-
     rbuff_init(&rb, rb_buff, GPS_BUFFER_SIZE);
     gps_task.start_time = ts_systime();
     gps_task.priority = SLEEP_PRIORITY;

@@ -14,14 +14,14 @@ typedef struct angle // 8 bytes
 	float minutes;
 } angle_t;
 
-typedef struct gga // 40 bytes
-{
-	char time[12]; // as HH:mm:ss.ss
+typedef struct gga // 26 bytes
+{ 
 	angle_t latitude;
 	angle_t longitude;
+	int time; // ms since midnight
 	float altitude;
-	int fix;
-	int sat_count;
+	short fix;
+	short sat_count;
 } gga_packet_t;
 
 

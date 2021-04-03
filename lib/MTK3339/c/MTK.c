@@ -1,5 +1,6 @@
 #include"MTK.h"
 #include<string.h>
+#include<stdio.h>
 
 #define COMMAND_HEAD "$PMTK"
 #define COMMAND_TAIL_FORM "*%X\r\n"
@@ -7,7 +8,7 @@
 
 #define GGA_HEAD "$GPGGA,"
 #define SEC_COUNT 10
-#define SEC_LENS {0,9,9,1,9,1,1,1,0,6}
+#define SEC_LENS {6,9,9,1,9,1,1,1,0,1}
 
 #define MTK3339_DESC 2
 
@@ -18,13 +19,13 @@
 #define PUTND(n) for(int i=0; i<(n); i++) {PUTNEXT(RANDD);}
 
 void init_gga(char* output, char* rate)
-{
+{  
 	gps_send(output);
 	gps_send(rate);
-}
+} 
 
 void gps_send(char* data)
-{
+{ 
 	char out[COMMAND_MAX_LEN];
 	memset(out, '\0', COMMAND_MAX_LEN);
 
@@ -37,73 +38,79 @@ void gps_send(char* data)
 	// printf("Command data: %s\nFull command string (length %ld): %s\n", data, strlen(out), out);
 	fprintf((FILE*)2, out, strlen(out));
 }
-
+ 
 int parse_gga(char* nmea_output, gga_packet_t* gga_packet, size_t n)
 {
 	// "$GPGGA,115739.00,4158.8441367,N,19147.4416929,W,4   ,13  ,0.9,255.747,M,,,,*"
 	//         ^time     ^lat           ^lon            ^fix ^sat     ^alt
-
-	// run through string until a null byte or n
-	// count section length, reset on comma (set to null byte)
-	int i = 0;
-	int sec = 0;
-	int cur = 0;
-	int lens[] = SEC_LENS;
-	while (nmea_output[i] && (i < n) && (sec < SEC_COUNT))
+	if (strncmp(nmea_output, GGA_HEAD, 7)) 
 	{
+		printf("Not a GGA sentence.\n");
+		return -1; // wrong type of string
+	}
+	register int i = 0;
+	register int sec = 0;
+	register int cur = 0;
+	int lens[] = SEC_LENS;
+	// first pass: check each section against lens for sufficient length, set ',' to \0
+	while (nmea_output[i] && (i < n) && (sec < SEC_COUNT))
+	{ 
 		if (nmea_output[i] == ',')
 		{
 			if (cur < lens[sec])
 			{
-				return -1; // current section too short
-			}
+				printf("%s\n", nmea_output + i);
+				printf("Section %d (length %d) less than required length %d.\n", sec, cur, lens[sec]);
+				return -1; // section length non-compliant
+	  	 	}
 			sec++;
 			nmea_output[i] = '\0';
 			cur = 0;
-		}
-		cur++;
+	    	}
+	 	cur++;
 		i++;
-	}
-
+	}  
 	if (sec < SEC_COUNT)
 	{
-		return -1;
+		printf("Too few sections.\n");
+		return -1; // not enough sections were read
 	}
 	char* seeker = nmea_output;
-	// time
+	// time; very annoying
 	NEXT;
-	char* time_s = gga_packet->time;
-	time_s[11] = '\0';
-	time_s[2] = time_s[5] = ':';
-	sscanf(seeker, "%2c%2c%5s", time_s, time_s + 3, time_s + 6);
+	gga_packet->time = 0;
+	gga_packet->time += 10*(seeker[0] - '0') + seeker[1] - '0';
+	gga_packet->time *= 60;
+	gga_packet->time += 10*(seeker[2] - '0') + seeker[3] - '0';
+	gga_packet->time *= 60;
+	gga_packet->time += 10*(seeker[4] - '0') + seeker[5] - '0';
+	gga_packet->time *= 1000;
+	gga_packet->time += atoi(seeker + 7);
 	// latitude
 	NEXT;
-	angle_t* lat = &(gga_packet->latitude);
-	sscanf(seeker, "%2d%f", &(lat->degrees), &(lat->minutes));
+	sscanf(seeker, "%2d%f", // copy angle
+		&((gga_packet->latitude).degrees), 
+		&((gga_packet->latitude).minutes));
 	NEXT;
-	lat->degrees *= (*seeker == 'N') ? 1 : -1;
+	// set sign of angle using cardinal direction
+	gga_packet->latitude.degrees *= (*seeker == 'N') ? 1 : -1;
 	// longitude
 	NEXT;
-	angle_t* lon = &(gga_packet->longitude);
-	sscanf(seeker, "%3d%f", &(lon->degrees), &(lon->minutes));
+	sscanf(seeker, "%3d%f",
+		&(gga_packet->longitude.degrees), 
+		&(gga_packet->longitude.minutes));
 	NEXT;
-	lon->degrees *= (*seeker == 'E') ? 1 : -1;
+	gga_packet->longitude.degrees *= (*seeker == 'E') ? 1 : -1;
 	// fix
 	NEXT;
-	int* fix = &(gga_packet->fix);
-	sscanf(seeker, "%d", fix);
-
+	sscanf(seeker, "%1hd", &(gga_packet->fix));
 	// sattelite count
 	NEXT;
-	int* sat = &(gga_packet->sat_count);
-	sscanf(seeker, "%d", sat);
-
+	sscanf(seeker, "%2hd", &(gga_packet->sat_count));
 	// altitude
 	NEXT; NEXT;
-	float* alt = &(gga_packet->altitude);
-	sscanf(seeker, "%f", alt);
-
-	return 1;
+	sscanf(seeker, "%f", &(gga_packet->altitude));
+	return 0;
 }
 
 char* sim_gga()
@@ -142,7 +149,7 @@ char* sim_gga()
 	// the rest we don't care about
 	strcpy(seeker, "X.X,420.069,M,SXX.XX,C,XX,XXXX*XX\r\n");
 	return sentence;
-}
+} 
 
 byte_t get_checksum(char * command)
 {

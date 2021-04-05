@@ -28,21 +28,37 @@ void test() {
 }
 
 int init() {
+    // init LED for idle tasks
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
 
+    // init system module
     if(sys_init() < 0) {
         extern UART_HandleTypeDef huart1;
-        HAL_UART_Transmit(&huart1, (uint8_t*)"error\r\n", 8, 100);
+        HAL_UART_Transmit(&huart1, (uint8_t*)"sys init error\r\n", 16, 100);
     }
 
+    // GPS
     gps_init();
     ts_add(&gps_task); // from gps.h/c
 
+    // Altimeter
+    // alt_init();
+    // ts_add(&alt_task);
+
+    // IMU
+    // imu_init();
+    // ts_add(&imu_task);
+
+    // SPI
+
+    // idle task
     tiny_task_t idle;
     idle.start_time = ts_systime();
     idle.default_priority = IDLE_PRIORITY;
     idle.task = &LED_loop;
+    ts_add(&idle);
 
+    // testing tasks
     // tiny_task_t hw_chk;
     // hw_chk.start_time = ts_systime();
     // hw_chk.default_priority = LOW_PRIORITY;
@@ -53,12 +69,15 @@ int init() {
     // spi_flash.default_priority = HIGH_PRIORITY;
     // spi_flash.task = SPI_flash;
 
-    ts_add(&idle);
     // ts_add(&hw_chk);
     // ts_add(&spi_flash);
 
+
     // start the scheduler
     ts_schedule(NULL, 0);
+
+    // loop forever
+    while(1) {};
 
     return -1; // should never return
 }

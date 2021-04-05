@@ -20,12 +20,18 @@
 #define GPS_ENDL '\n'
 #define GPS_BUFFER_SIZE 256 // should be 2 x maximum packet length
 
+
+// task to be scheduled
+tiny_task_t gps_task;
+
+// location of resultant data
+gga_packet_t gps_packet;
+
+// local data
 uint8_t gps_char;
 unsigned char lines = 0;
 uint8_t rb_buff[GPS_BUFFER_SIZE];
 ringbuff_t rb;
-tiny_task_t gps_task;
-gga_packet_t gps_packet;
 
 
 void gps_update(tiny_task_t* task);

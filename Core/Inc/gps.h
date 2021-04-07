@@ -11,6 +11,7 @@ void gps_init();
 void gps_RxCallback();
 
 // this is where the parsed gps data gets placed
+// TODO put this somewhere else?
 extern gga_packet_t gps_packet;
 
 // this is the task that the scheduler needs

@@ -1,5 +1,6 @@
 #include "init.h"
 #include "tasks.h"
+#include "imu.h"
 #include "lib/MTK3339/MTK.h"
 #include "lib/w25qxx/w25qxx.h"
 #include <stdio.h>
@@ -39,15 +40,15 @@ int init() {
 
     // GPS
     gps_init();
-    ts_add(&gps_task); // from gps.h/c
+    // ts_add(&gps_task); // from gps.h/c
 
     // Altimeter
     // alt_init();
     // ts_add(&alt_task);
 
     // IMU
-    // imu_init();
-    // ts_add(&imu_task);
+    imu_init();
+    ts_add(&imu_task);
 
     // SPI
 

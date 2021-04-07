@@ -75,7 +75,7 @@ void gps_update(tiny_task_t* task) {
     printf("%s\n", buff);
 
     parse_gga((char*)buff, &gps_packet, i);
-    printf("time: %s, lat: %i.%f, long: %i.%f, alt: %f, fix: %i, sats: %i\r\n\r\n", gps_packet.time,
+    printf("time: %i, lat: %i.%f, long: %i.%f, alt: %f, fix: %i, sats: %i\r\n\r\n", gps_packet.time,
             gps_packet.latitude.degrees, gps_packet.latitude.minutes, gps_packet.longitude.degrees,
             gps_packet.longitude.minutes, gps_packet.altitude, gps_packet.fix, gps_packet.sat_count);
     #endif

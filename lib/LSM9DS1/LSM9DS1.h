@@ -38,8 +38,8 @@ modified to work with HAL
 
 #define LSM9DS1_TIMEOUT 200 // default i2c timeout
 
-#define LSM9DS1_AG_ADDR(sa0)	((sa0) == 0 ? 0x6A : 0x6B)
-#define LSM9DS1_M_ADDR(sa1)		((sa1) == 0 ? 0x1C : 0x1E)
+#define LSM9DS1_AG_ADDR	0b11010111
+#define LSM9DS1_M_ADDR	0b00111101
 
 enum lsm9ds1_axis {
 	X_AXIS,
@@ -88,7 +88,7 @@ public:
 	// - i2C port (Note, only on "begin()" funtion, for use with I2C com interface)
 	//   defaults to Wire, but if hardware supports it, can use other TwoWire ports.
 	//   **For SPI use "beginSPI()", and only send first two address arguments.
-	uint16_t begin(uint8_t agAddress = LSM9DS1_AG_ADDR(1), uint8_t mAddress = LSM9DS1_M_ADDR(1), I2C_HandleTypeDef* i2c = &hi2c1);
+	uint16_t begin(uint8_t agAddress = LSM9DS1_AG_ADDR, uint8_t mAddress = LSM9DS1_M_ADDR, I2C_HandleTypeDef* i2c = &hi2c1);
 	uint16_t beginSPI(uint8_t ag_CS_pin, uint8_t m_CS_pin); // not supported currently w/ HAL version
 
 	void calibrate(bool autoCalc = true);

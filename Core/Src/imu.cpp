@@ -53,7 +53,7 @@ void imu_update(tiny_task_t* task) {
 void imu_init() {
     // set task first so we don't deref a null ptr in the scheduler
     imu_task.start_time = ts_systime() + IMU_SAMPLE_PERIOD;
-    imu_task.priority = LOW_PRIORITY;
+    imu_task.default_priority = LOW_PRIORITY;
     imu_task.task = &imu_update;
 
     if(0 == imu.begin()) {

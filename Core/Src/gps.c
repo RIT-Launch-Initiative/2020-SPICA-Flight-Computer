@@ -40,8 +40,9 @@ void gps_update(tiny_task_t* task);
 void gps_init() {
     rbuff_init(&rb, rb_buff, GPS_BUFFER_SIZE);
     gps_task.start_time = ts_systime();
-    gps_task.priority = SLEEP_PRIORITY;
+    gps_task.default_priority = SLEEP_PRIORITY;
     gps_task.task = &gps_update;
+
     init_gga(NMEA_OUTPUT_DEFAULT, NMEA_RATE_DEFAULT);
 
     // this has to be the last thing init does

@@ -24,6 +24,7 @@
 
 #include "stm32f1xx_hal.h"
 #include "lib/common/common.h"
+#include "i2c.h"
 #include <stdint.h>
 
 // was 0x60
@@ -114,7 +115,7 @@ class MPL3115A2 {
 
 public:
   MPL3115A2();
-  bool begin(I2C_HandleTypeDef* i2c);
+  bool begin(I2C_HandleTypeDef* i2c = &hi2c1);
   float getPressure(void);
   float getAltitude(void);
   float getTemperature(void);

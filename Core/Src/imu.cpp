@@ -25,7 +25,7 @@ float raw_gz;
 void imu_update(tiny_task_t* task) {
     if(!imu.accelAvailable() || !imu.gyroAvailable()) {
         // try again (soonish) :(
-        task->start_time = ts_systime() + (IMU_SAMPLE_PERIOD / 2.0);
+        task->start_time = ts_systime() + (IMU_SAMPLE_PERIOD / 2);
     }
 
     imu.readGyro();

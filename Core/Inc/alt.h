@@ -8,7 +8,9 @@ extern "C" {
     #include "lib/TinyScheduler/ts.h"
 }
 
-#define ALT_SAMPLE_PERIOD 100 // sample at 10 Hz
+// experimentally determined this is about the fastest we can go
+#define ALT_SAMPLE_PERIOD 400 // milliseconds
+
 #define METERS_TO_FEET 3.28084
 
 // call this before using the altimeter

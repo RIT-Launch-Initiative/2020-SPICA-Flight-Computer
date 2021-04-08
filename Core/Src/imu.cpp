@@ -33,7 +33,7 @@ void imu_update(tiny_task_t* task) {
 
     raw_ax = imu.calcAccel(imu.ax);
     raw_ay = imu.calcAccel(imu.ay);
-    raw_ay = imu.calcAccel(imu.ay);
+    raw_az = imu.calcAccel(imu.ay);
 
     raw_gx = imu.calcGyro(imu.gx);
     raw_gy = imu.calcGyro(imu.gy);
@@ -43,14 +43,15 @@ void imu_update(tiny_task_t* task) {
     // send some data to the ground and log the raw values
     // for now just print them out of the debug UART
     #ifdef DEBUG
-    printf("ax: %f, ay: %f, az: %f\r\n", raw_ax, raw_ay, raw_az);
-    printf("gx: %f, gy: %f, gz: %f\r\n\r\n", raw_gx, raw_gy, raw_gz);
+    // printf("ax: %f, ay: %f, az: %f\r\n", raw_ax, raw_ay, raw_az);
+    // printf("gx: %f, gy: %f, gz: %f\r\n\r\n", raw_gx, raw_gy, raw_gz);
+    printf("%f\r\n", raw_ax);
     #endif
 
     task->start_time = ts_systime() + IMU_SAMPLE_PERIOD;
 }
 
-void imu_init() {
+void imu_init(int calibrate) {
     // set task first so we don't deref a null ptr in the scheduler
     imu_task.start_time = ts_systime() + IMU_SAMPLE_PERIOD;
     imu_task.default_priority = LOW_PRIORITY;
@@ -61,11 +62,18 @@ void imu_init() {
         return;
         // TODO return failure code
     }
-    // TODO calibrate?? (probably a good idea)
+
+    // calibrate
+    if(calibrate) {
+        HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
+        HAL_Delay(1000); // give ourselves a second to stand back
+        imu.calibrate();
+        HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
+    }
 
     // TODO change these settings
-    // imu.setGyroScale(G_SCALE_245DPS);
-    // imu.setAccelScale(A_SCALE_2G);
-    // imu.setGyroODR(G_ODR_149);
-    // imu.setAccelODR(XL_ODR_10);
+    imu.setGyroScale(G_SCALE_245DPS);
+    imu.setAccelScale(A_SCALE_2G);
+    imu.setGyroODR(G_ODR_149);
+    imu.setAccelODR(XL_ODR_10);
 }

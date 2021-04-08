@@ -14,7 +14,8 @@ extern "C" {
 #define IMU_SAMPLE_PERIOD (1000 / IMU_SAMPLE_FREQ) // in ms
 
 // call this before using the IMU
-void imu_init();
+// set calibrate to 0 to skip calibration
+void imu_init(int calibrate = 1);
 
 // start this task on the scheduler
 extern tiny_task_t imu_task;

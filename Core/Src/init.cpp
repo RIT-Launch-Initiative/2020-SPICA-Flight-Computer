@@ -11,6 +11,7 @@ extern "C" {
     #include "lib/TinyScheduler/ts.h"
     #include "lib/common/common.h"
     #include "gps.h"
+    #include "log.h"
 }
 
 
@@ -26,17 +27,27 @@ int init() {
 
     // GPS
     gps_init();
-    // ts_add(&gps_task); // from gps.h/c
+    ts_add(&gps_task); // from gps.h/c
 
     // Altimeter
     alt_init();
-    // ts_add(&alt_task);
+    ts_add(&alt_task);
 
     // IMU
     imu_init();
     ts_add(&imu_task);
 
-    // SPI
+    // logger
+    log_init();
+    ts_add(&log_task);
+
+    // SPI Flash
+    // TODO
+
+    // make a little buzz buzz when we're ready
+    HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
+    HAL_Delay(500);
+    HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
 
     // idle task
     tiny_task_t idle;
@@ -45,7 +56,7 @@ int init() {
     idle.task = &LED_loop;
     ts_add(&idle);
 
-    // testing task
+    // i2c hw checking task
     // tiny_task_t hw_chk;
     // hw_chk.start_time = ts_systime();
     // hw_chk.default_priority = LOW_PRIORITY;

@@ -5,6 +5,7 @@
 #include "lib/MTK3339/MTK.h"
 
 // call this before using the GPS
+// TODO add a return
 void gps_init();
 
 // call this in HAL_UART_RxCpltCallback for whatever uart the GPS is connected to

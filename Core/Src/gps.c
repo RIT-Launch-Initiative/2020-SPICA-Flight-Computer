@@ -12,8 +12,8 @@
 #include "lib/ringbuff/ringbuff.h"
 #include "lib/TinyScheduler/ts.h"
 #include "lib/MTK3339/MTK.h"
+#include "log.h"
 #include <stdint.h>
-#include <unistd.h>
 
 #define GPS_UART huart2
 #define GPS_STARTL '$'
@@ -49,10 +49,11 @@ void gps_init() {
     // TODO maybe return if this isn't HAL_OK
     if(HAL_OK != HAL_UART_Receive_IT(&GPS_UART, &gps_char, 1)) {
         printf("gps init failed!\r\n");
+        return; // TODO return a failure code
     }
 }
 
-// TODO check for errors on return with memcpyout
+// TODO check memcpyout errors (returns an error code, currently not checking it)
 void gps_update(tiny_task_t* task) {
     disable_irq;
     lines--; // event is being handled
@@ -71,11 +72,21 @@ void gps_update(tiny_task_t* task) {
         i++;
     }
 
-    #ifdef DEBUG
     buff[i] = '\0';
+    parse_gga((char*)buff, &gps_packet, i);
+
+    // copy the data out to the logger
+    log_packet.latitude = ((float)gps_packet.latitude.degrees) + (gps_packet.latitude.minutes / 60);
+    log_packet.longitude = ((float)gps_packet.longitude.degrees) + (gps_packet.longitude.minutes / 60);
+    log_packet.gps_alt = gps_packet.altitude;
+    log_packet.gps_time = gps_packet.time;
+    log_packet.gps_fix = gps_packet.fix;
+    log_packet.gps_sats = gps_packet.sat_count;
+
+
+    #ifdef DEBUG
     printf("%s\n", buff);
 
-    parse_gga((char*)buff, &gps_packet, i);
     printf("time: %i, lat: %i.%f, long: %i.%f, alt: %f, fix: %i, sats: %i\r\n\r\n", gps_packet.time,
             gps_packet.latitude.degrees, gps_packet.latitude.minutes, gps_packet.longitude.degrees,
             gps_packet.longitude.minutes, gps_packet.altitude, gps_packet.fix, gps_packet.sat_count);

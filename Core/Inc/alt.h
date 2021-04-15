@@ -14,13 +14,14 @@ extern "C" {
 #define METERS_TO_FEET 3.28084
 
 // call this before using the altimeter
+// TODO add a return
 void alt_init();
 
 // start this task on the scheduler
 extern tiny_task_t alt_task;
 
 // filtered altimeter data gets placed here
-// TODO put this somewhere else
+// TODO put this somewhere else?
 extern float alt;
 
 #endif

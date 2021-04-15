@@ -1,3 +1,6 @@
+/*
+*   Defines a number of TinyScheduler tasks and defines ts_systime for the scheduler
+*/
 #include "main.h"
 #include "adc.h"
 #include "i2c.h"
@@ -41,6 +44,8 @@ void LED_loop(tiny_task_t* t) {
     t->start_time = ts_systime() + 50; // run again in 50ms
 }
 
+
+// ------- NOTHING IS USED OUTSIDE OF TESTING BELOW HERE --------------- //
 
 // HARDWARE CHECKING
 // TODO probably get rid of this later

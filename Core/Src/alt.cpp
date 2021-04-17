@@ -34,16 +34,20 @@ void alt_update(tiny_task_t* task) {
     return;
 }
 
-void alt_init() {
+RetType alt_init() {
     alt_task.start_time = ts_systime() + ALT_SAMPLE_PERIOD;
     alt_task.default_priority = LOW_PRIORITY;
     alt_task.task = &alt_update;
 
     if(altimeter.begin() == 0) {
+        #ifdef DEBUG
         printf("ALT init fail\r\n");
-        return;
-        // TODO return failure
+        #endif
+
+        return RET_ERROR;
     }
 
     // TODO set sea level??
+
+    return RET_OK;
 }

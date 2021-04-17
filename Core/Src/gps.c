@@ -36,8 +36,7 @@ ringbuff_t rb;
 
 void gps_update(tiny_task_t* task);
 
-// initialize
-void gps_init() {
+RetType gps_init() {
     rbuff_init(&rb, rb_buff, GPS_BUFFER_SIZE);
     gps_task.start_time = ts_systime();
     gps_task.default_priority = SLEEP_PRIORITY;
@@ -46,11 +45,14 @@ void gps_init() {
     init_gga(NMEA_OUTPUT_DEFAULT, NMEA_RATE_DEFAULT);
 
     // this has to be the last thing init does
-    // TODO maybe return if this isn't HAL_OK
     if(HAL_OK != HAL_UART_Receive_IT(&GPS_UART, &gps_char, 1)) {
+        #ifdef DEBUG
         printf("gps init failed!\r\n");
-        return; // TODO return a failure code
+        #endif
+        
+        return RET_ERROR;
     }
+    return RET_OK;
 }
 
 // TODO check memcpyout errors (returns an error code, currently not checking it)

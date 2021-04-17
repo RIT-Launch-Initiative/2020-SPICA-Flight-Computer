@@ -77,26 +77,27 @@ void imu_update(tiny_task_t* task) {
     task->start_time += IMU_SAMPLE_PERIOD;
 }
 
-void imu_init(int calibrate) {
+RetType imu_init(int calibrate) {
     // set task first so we don't deref a null ptr in the scheduler
     imu_task.start_time = ts_systime() + IMU_SAMPLE_PERIOD;
     imu_task.default_priority = LOW_PRIORITY;
     imu_task.task = &imu_update;
 
     if(0 == imu.begin()) {
+        #ifdef DEBUG
         printf("IMU init fail\r\n");
-        return;
-        // TODO return failure code
+        #endif
+
+        return RET_ERROR;
     }
 
-    // TODO not going to calibrate for now, want to incorporate gravity
     // calibrate
-    // if(calibrate) {
-    //     HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
-    //     HAL_Delay(1000); // give ourselves a second to stand back
-    //     imu.calibrate();
-    //     HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
-    // }
+    if(calibrate) {
+        HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
+        HAL_Delay(1000); // give ourselves a second to stand back
+        imu.calibrate();
+        HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
+    }
 
     // TODO fiddle with these settings
     imu.setGyroScale(G_SCALE_245DPS);
@@ -105,4 +106,6 @@ void imu_init(int calibrate) {
     imu.setAccelODR(XL_ODR_10);
     imu.setMagScale(M_SCALE_4GS);
     imu.setMagODR(M_ODR_10);
+
+    return RET_OK;
 }

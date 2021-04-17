@@ -33,7 +33,7 @@ void log_update(tiny_task_t* task) {
 }
 
 // init function
-void log_init() {
+RetType log_init() {
     // setup task
     log_task.start_time = ts_systime() + LOG_PERIOD;
     log_task.default_priority = MEDIUM_PRIORITY; // higher priority than collecting data
@@ -48,4 +48,6 @@ void log_init() {
 
     // zero the packet
     memset(&log_packet, 0, sizeof(log_packet_t));
+
+    return RET_OK;
 }

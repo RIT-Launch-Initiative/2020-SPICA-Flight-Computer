@@ -6,6 +6,7 @@
 
 extern "C" {
     #include "lib/TinyScheduler/ts.h"
+    #include "lib/common/common.h"
 }
 
 // experimentally determined this is about the fastest we can go
@@ -14,8 +15,8 @@ extern "C" {
 #define METERS_TO_FEET 3.28084
 
 // call this before using the altimeter
-// TODO add a return
-void alt_init();
+// returns RET_OK on success, RET_ERROR on failure
+RetType alt_init();
 
 // start this task on the scheduler
 extern tiny_task_t alt_task;

@@ -41,7 +41,7 @@ void LED_loop(tiny_task_t* t) {
     i += direction;
     HAL_GPIO_TogglePin(LEDPorts[i], LEDPins[i]);
 
-    t->start_time = ts_systime() + 50; // run again in 50ms
+    t->start_time += 50; // run again in 50ms
 }
 
 

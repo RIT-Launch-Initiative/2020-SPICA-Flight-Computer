@@ -6,6 +6,7 @@
 
 #include "stdint.h"
 #include "lib/TinyScheduler/ts.h"
+#include "lib/common/common.h"
 
 // amount of time between each log
 // currently set to the speed the IMU updates (10 Hz)
@@ -13,7 +14,7 @@
 #define LOG_PERIOD 100
 
 // initialize the logger
-void log_init();
+RetType log_init();
 
 // logger task
 extern tiny_task_t log_task;

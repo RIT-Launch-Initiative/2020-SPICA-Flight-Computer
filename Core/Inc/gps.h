@@ -3,10 +3,11 @@
 
 #include "lib/TinyScheduler/ts.h"
 #include "lib/MTK3339/MTK.h"
+#include "lib/common/common.h"
 
 // call this before using the GPS
-// TODO add a return
-void gps_init();
+// returns RET_OK on success, RET_ERROR on failure
+RetType gps_init();
 
 // call this in HAL_UART_RxCpltCallback for whatever uart the GPS is connected to
 void gps_RxCallback();

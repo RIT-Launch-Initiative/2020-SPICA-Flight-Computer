@@ -19,30 +19,97 @@ int init() {
     // init LED for idle tasks
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
 
+    // initialize all modules
+    // try to initialize all of them 5 times and if they fail print an error when in debug mode
+
+    unsigned char good_init = 0;
+
     // init system module
-    if(sys_init() < 0) {
+    for(int i = 0; i < 5; i++) {
+        if(sys_init() >= 0) {
+            good_init = 1;
+            break;
+        }
+        HAL_Delay(500);
+    }
+
+    if(good_init) {
+        good_init = 0;
+    } else {
+        #ifdef DEBUG
         extern UART_HandleTypeDef huart1;
-        HAL_UART_Transmit(&huart1, (uint8_t*)"sys init error\r\n", 16, 100);
+        HAL_UART_Transmit(&huart1, (uint8_t*)"sys failed to init\r\n", 16, 100);
+        #endif
     }
 
     // GPS
-    gps_init();
-    ts_add(&gps_task); // from gps.h/c
+    for(int i = 0; i < 5; i++) {
+        if(RET_OK == gps_init()) {
+            ts_add(&gps_task);
+            break;
+        }
+        HAL_Delay(500);
+    }
+
+    if(good_init) {
+        good_init = 0;
+    } else {
+        #ifdef DEBUG
+        printf("GPS failed to init\r\n");
+        #endif
+    }
 
     // Altimeter
-    alt_init();
-    ts_add(&alt_task);
+    for(int i = 0; i < 5; i++) {
+        if(RET_OK == alt_init()) {
+            ts_add(&alt_task);
+            break;
+        }
+        HAL_Delay(500);
+    }
+
+    if(good_init) {
+        good_init = 0;
+    } else {
+        #ifdef DEBUG
+        printf("altimeter failed to init\r\n");
+        #endif
+    }
 
     // IMU
-    imu_init();
-    ts_add(&imu_task);
+    for(int i = 0; i < 5; i++) {
+        if(RET_OK == imu_init()) {
+            ts_add(&imu_task);
+            break;
+        }
+        HAL_Delay(500);
+    }
+
+    if(good_init) {
+        good_init = 0;
+    } else {
+        #ifdef DEBUG
+        printf("IMU failed to init\r\n");
+        #endif
+    }
 
     // logger
-    log_init();
-    ts_add(&log_task);
+    for(int i = 0; i < 5; i++) {
+        if(RET_OK == log_init()) {
+            ts_add(&log_task);
+            break;
+        }
+        HAL_Delay(500);
+    }
 
-    // SPI Flash
-    // TODO
+    if(good_init) {
+        good_init = 0;
+    } else {
+        #ifdef DEBUG
+        printf("logger failed to init\r\n");
+        #endif
+    }
+
 
     // make a little buzz buzz when we're ready
     HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);

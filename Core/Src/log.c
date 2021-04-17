@@ -29,6 +29,9 @@ void log_update(tiny_task_t* task) {
     printf("logged packet\r\n");
     #endif
 
+    // TODO write to SPI flash?
+    // perhaps queue up the writes
+
     task->start_time += LOG_PERIOD;
 }
 

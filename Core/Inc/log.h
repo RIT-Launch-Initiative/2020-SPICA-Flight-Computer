@@ -20,6 +20,9 @@ RetType log_init();
 extern tiny_task_t log_task;
 
 // we're assuming that floats are 4 bytes although the C standard does not guarantee this
+// do not do any implicit packing, but should be try to make 4 byte aligned for faster reads/writes though
+// 64 bytes
+#pragma pack(1)
 typedef struct {
     // uptime
     uint32_t uptime;

@@ -5,6 +5,7 @@
 #include <string.h> // memset
 #include <stdio.h>
 #include "lib/common/common.h" // _write
+#include "lib/fs/fs.h"
 
 // XBEE UART file descriptor (as in lib/sys.c)
 #define XBEE_FD 0
@@ -29,8 +30,8 @@ void log_update(tiny_task_t* task) {
     printf("logged packet\r\n");
     #endif
 
-    // TODO write to SPI flash?
-    // perhaps queue up the writes
+    // write to nonvolatile storage on flash chip
+    fs_write((uint8_t*)&log_packet, sizeof(log_packet_t));
 
     task->start_time += LOG_PERIOD;
 }
@@ -51,6 +52,10 @@ RetType log_init() {
 
     // zero the packet
     memset(&log_packet, 0, sizeof(log_packet_t));
+
+    if(FS_OK != fs_open()) {
+        return RET_ERROR;
+    }
 
     return RET_OK;
 }

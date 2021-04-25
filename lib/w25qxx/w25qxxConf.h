@@ -5,6 +5,6 @@
 #define _W25QXX_CS_GPIO               GPIOA
 #define _W25QXX_CS_PIN                GPIO_PIN_4
 #define _W25QXX_USE_FREERTOS          0
-#define _W25QXX_DEBUG                 1
+#define _W25QXX_DEBUG                 0
 
 #endif

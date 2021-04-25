@@ -72,7 +72,7 @@ Core/Src/gps.c \
 Core/Src/log.c \
 lib/MTK3339/MTK.c \
 lib/fs/fs.c \
-# lib/w25qxx/w25qxx.c \
+lib/w25qxx/w25qxx.c \
 
 # CPP sources
 CPP_SOURCES = \

@@ -23,12 +23,16 @@ uint8_t buffer_index = 0;
 // next block to write to when the buffer is full
 static uint32_t next_page;
 
-
+// boolean flag for if the flash chip has been initialized
+static uint8_t flash_open = 0;
 
 // open the filesystem with a new file
 int fs_open() {
-    if(!W25qxx_Init()) {
-        return FS_FAIL;
+    if(!flash_open) {
+        if(!W25qxx_Init()) {
+            return FS_FAIL;
+        }
+        flash_open = 1;
     }
 
     if(w25qxx.PageSize != PAGE_SIZE) {
@@ -38,7 +42,6 @@ int fs_open() {
 
         return FS_FAIL;
     }
-
 
     // first page
     // should be the size of PAGE_SIZE
@@ -73,6 +76,10 @@ int fs_open() {
 
 
 int fs_write(uint8_t* data, uint16_t len) {
+    if(file_index == -1) {
+        return FS_NOT_OPEN;
+    }
+
     if(len + buffer_index > PAGE_SIZE) {
         // copy what we can to the buffer
         uint16_t empty = PAGE_SIZE - buffer_index;
@@ -101,7 +108,14 @@ int fs_write(uint8_t* data, uint16_t len) {
 }
 
 
-void dump_files(FILE* fd) {
+int dump_files(FILE* fd) {
+    if(!flash_open) {
+        if(!W25qxx_Init()) {
+            return FS_FAIL;
+        }
+        flash_open = 1;
+    }
+
     // read in the first page, which is always the configuration page
     // contains uint32's that represent how many pages each file is using
     uint32_t config_page[MAX_NUM_FILES];
@@ -116,4 +130,18 @@ void dump_files(FILE* fd) {
             fwrite(buff, 1, PAGE_SIZE, fd); // write out the file descriptor
         }
     }
+    return FS_OK;
+}
+
+int wipe_fs() {
+    if(!flash_open) {
+        if(!W25qxx_Init()) {
+            return FS_FAIL;
+        }
+        flash_open = 1;
+    }
+
+    W25qxx_EraseChip();
+    
+    return FS_OK;
 }

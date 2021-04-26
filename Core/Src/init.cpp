@@ -54,6 +54,9 @@ int init() {
 
         stat = HAL_UART_Receive_DMA(&huart3, (uint8_t*)&echo_debug, 1);
         stat = HAL_UART_Receive_DMA(&huart1, (uint8_t*)&echo_xbee, 1);
+
+        #ifdef PASSTHROUGH_GPS
         stat = HAL_UART_Receive_DMA(&huart2, (uint8_t*)echo_gps, 1);
+        #endif
     }
 }

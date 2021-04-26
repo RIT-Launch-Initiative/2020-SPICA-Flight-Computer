@@ -28,7 +28,7 @@ int fs_open();
 int fs_write(uint8_t* data, uint16_t len);
 
 // dump all files out to file descriptor fd (calls fprintf with that value)
-int dump_files(FILE* fd);
+int fs_dump_files(FILE* fd);
 
 // if this function is called, fs_write will overwrite other files if the system runs out of space
 // should only be set for very high priority writes (e.g. an actual flight)
@@ -39,6 +39,6 @@ int dump_files(FILE* fd);
 
 // wipe the flash chip
 // NOTE: be careful, can't undo this
-int wipe_fs();
+int fs_wipe();
 
 #endif

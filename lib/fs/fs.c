@@ -108,7 +108,7 @@ int fs_write(uint8_t* data, uint16_t len) {
 }
 
 
-int dump_files(FILE* fd) {
+int fs_dump_files(FILE* fd) {
     if(!flash_open) {
         if(!W25qxx_Init()) {
             return FS_FAIL;
@@ -133,7 +133,7 @@ int dump_files(FILE* fd) {
     return FS_OK;
 }
 
-int wipe_fs() {
+int fs_wipe() {
     if(!flash_open) {
         if(!W25qxx_Init()) {
             return FS_FAIL;
@@ -142,6 +142,6 @@ int wipe_fs() {
     }
 
     W25qxx_EraseChip();
-    
+
     return FS_OK;
 }

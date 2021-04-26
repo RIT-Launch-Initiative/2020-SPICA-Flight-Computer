@@ -1,138 +1,28 @@
 #include "init.h"
-#include "tasks.h"
-#include "imu.h"
-#include "alt.h"
-#include "lib/MTK3339/MTK.h"
-#include "lib/w25qxx/w25qxx.h"
+#include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 extern "C" {
-    #include "lib/TinyScheduler/ts.h"
+    #include "lib/fs/fs.h"
     #include "lib/common/common.h"
-    #include "gps.h"
-    #include "log.h"
 }
 
 
 int init() {
-    // init LED for idle tasks
-    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-
-    // initialize all modules
-    // try to initialize all of them 5 times and if they fail print an error when in debug mode
-
-    unsigned char good_init = 0;
-
-    // init system module
-    for(int i = 0; i < 5; i++) {
-        if(sys_init() >= 0) {
-            good_init = 1;
-            break;
-        }
-        HAL_Delay(500);
+    if(sys_init() == -1) {
+        while(1) {}; // loop forever and don't buzz
     }
 
-    if(good_init) {
-        good_init = 0;
-    } else {
-        #ifdef DEBUG
-        extern UART_HandleTypeDef huart1;
-        HAL_UART_Transmit(&huart1, (uint8_t*)"sys failed to init\r\n", 16, 100);
-        #endif
-    }
-
-    // GPS
-    for(int i = 0; i < 5; i++) {
-        if(RET_OK == gps_init()) {
-            ts_add(&gps_task);
-            break;
-        }
-        HAL_Delay(500);
-    }
-
-    if(good_init) {
-        good_init = 0;
-    } else {
-        #ifdef DEBUG
-        printf("GPS failed to init\r\n");
-        #endif
-    }
-
-    // Altimeter
-    for(int i = 0; i < 5; i++) {
-        if(RET_OK == alt_init()) {
-            ts_add(&alt_task);
-            break;
-        }
-        HAL_Delay(500);
-    }
-
-    if(good_init) {
-        good_init = 0;
-    } else {
-        #ifdef DEBUG
-        printf("altimeter failed to init\r\n");
-        #endif
-    }
-
-    // IMU
-    for(int i = 0; i < 5; i++) {
-        if(RET_OK == imu_init()) {
-            ts_add(&imu_task);
-            break;
-        }
-        HAL_Delay(500);
-    }
-
-    if(good_init) {
-        good_init = 0;
-    } else {
-        #ifdef DEBUG
-        printf("IMU failed to init\r\n");
-        #endif
-    }
-
-    // logger
-    for(int i = 0; i < 5; i++) {
-        if(RET_OK == log_init()) {
-            ts_add(&log_task);
-            break;
-        }
-        HAL_Delay(500);
-    }
-
-    if(good_init) {
-        good_init = 0;
-    } else {
-        #ifdef DEBUG
-        printf("logger failed to init\r\n");
-        #endif
-    }
-
-
-    // make a little buzz buzz when we're ready
+    // buzz for 5s
     HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
-    HAL_Delay(500);
+    HAL_Delay(5000);
     HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
 
-    // idle task
-    tiny_task_t idle;
-    idle.start_time = ts_systime();
-    idle.default_priority = IDLE_PRIORITY;
-    idle.task = &LED_loop;
-    ts_add(&idle);
-
-    // i2c hw checking task
-    // tiny_task_t hw_chk;
-    // hw_chk.start_time = ts_systime();
-    // hw_chk.default_priority = LOW_PRIORITY;
-    // hw_chk.task = &check_hw;
-    // ts_add(&hw_chk);
-
-
-    // start the scheduler
-    ts_schedule(NULL, 0);
+    // dump filesystem out the UART
+    if(fs_dump_files((FILE*)1) == FS_FAIL) {
+        printf("\r\nDUMP FAIL\r\n");
+    }
 
     // loop forever
     while(1) {};

@@ -4,7 +4,6 @@
 */
 #include "main.h"
 #include "usart.h"
-#include "gps.h"
 #include "lib/common/common.h"
 #include "lib/queue/queue.h"
 #include <stdint.h>
@@ -84,7 +83,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if(huart == &huart1) {
         // TODO (debug uart)
     } else if(huart == &huart2) {
-        gps_RxCallback(); // from gps.c
+        // gps_RxCallback(); // from gps.c
     } else if(huart == &huart3) {
         // TODO (XBee uart)
     }

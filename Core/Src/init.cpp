@@ -3,6 +3,9 @@
 #include "usart.h"
 #include <string.h>
 
+// don't passthrough the GPS by default
+// #define PASSTHROUGH_GPS
+
 HAL_StatusTypeDef stat = HAL_OK;
 
 char* failure = "failed!\r\n";
@@ -34,7 +37,10 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 int init() {
     while(1) {
         if(gps_read) { // gps -> debug
+            #ifdef PASSTHROUGH_GPS
             HAL_UART_Transmit(&huart1, (uint8_t*)echo_gps, 1, 10);
+            #endif
+
             gps_read = 0;
         }
         if(xbee_read) { // xbee -> debug

@@ -8,7 +8,7 @@
 #include "lib/fs/fs.h"
 
 // XBEE UART file descriptor (as in lib/sys.c)
-#define XBEE_FD 0
+#define XBEE_FD 1
 
 tiny_task_t log_task;
 log_packet_t log_packet;
@@ -53,9 +53,9 @@ RetType log_init() {
     // zero the packet
     memset(&log_packet, 0, sizeof(log_packet_t));
 
-    if(FS_OK != fs_open()) {
-        return RET_ERROR;
-    }
+    // if(FS_OK != fs_open()) {
+    //     return RET_ERROR;
+    // }
 
     return RET_OK;
 }

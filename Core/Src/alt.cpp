@@ -17,7 +17,7 @@ float raw_alt;
 void alt_update(tiny_task_t* task) {
     if(altimeter.getAltitude(&raw_alt) != RET_OK) {
         // blocked or error, try again soonish
-        printf("alt fail\r\n");
+        // printf("alt fail\r\n");
         task->start_time += (ALT_SAMPLE_PERIOD / 2);
     } else {
         // TODO send the altitude to a filter

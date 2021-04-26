@@ -46,6 +46,7 @@ int init() {
     for(int i = 0; i < 5; i++) {
         if(RET_OK == gps_init()) {
             ts_add(&gps_task);
+            good_init = 1;
             break;
         }
         HAL_Delay(500);
@@ -63,6 +64,7 @@ int init() {
     for(int i = 0; i < 5; i++) {
         if(RET_OK == alt_init()) {
             ts_add(&alt_task);
+            good_init = 1;
             break;
         }
         HAL_Delay(500);
@@ -80,6 +82,7 @@ int init() {
     for(int i = 0; i < 5; i++) {
         if(RET_OK == imu_init()) {
             ts_add(&imu_task);
+            good_init = 1;
             break;
         }
         HAL_Delay(500);
@@ -97,6 +100,7 @@ int init() {
     for(int i = 0; i < 5; i++) {
         if(RET_OK == log_init()) {
             ts_add(&log_task);
+            good_init = 1;
             break;
         }
         HAL_Delay(500);

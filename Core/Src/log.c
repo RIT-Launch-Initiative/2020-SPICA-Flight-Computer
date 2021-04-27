@@ -53,9 +53,10 @@ RetType log_init() {
     // zero the packet
     memset(&log_packet, 0, sizeof(log_packet_t));
 
-    // if(FS_OK != fs_open()) {
-    //     return RET_ERROR;
-    // }
+    if(FS_OK != fs_open()) {
+        printf("FLASH failed to initialize\r\n");
+        return RET_OK; // still want to run the XBee logging
+    }
 
     return RET_OK;
 }

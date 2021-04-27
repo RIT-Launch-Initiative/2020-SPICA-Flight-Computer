@@ -216,10 +216,13 @@ bool	W25qxx_Init(void)
 		break;
 		default:
 				#if (_W25QXX_DEBUG==1)
-				printf("w25qxx Unknown ID\r\n");
+				printf("w25qxx Unknown ID: %08x\r\n", id);
 				#endif
-			w25qxx.Lock=0;
-			return false;
+            // this is a quick and dirty hack to work with a cypress s25fl064labmfm010
+            w25qxx.ID=0;
+            w25qxx.BlockCount=128;
+			//w25qxx.Lock=0;
+			//return false;
 
 	}
 	w25qxx.PageSize=256;
@@ -228,7 +231,7 @@ bool	W25qxx_Init(void)
 	w25qxx.PageCount=(w25qxx.SectorCount*w25qxx.SectorSize)/w25qxx.PageSize;
 	w25qxx.BlockSize=w25qxx.SectorSize*16;
 	w25qxx.CapacityInKiloByte=(w25qxx.SectorCount*w25qxx.SectorSize)/1024;
-	W25qxx_ReadUniqID();
+	//W25qxx_ReadUniqID();
 	W25qxx_ReadStatusRegister(1);
 	W25qxx_ReadStatusRegister(2);
 	W25qxx_ReadStatusRegister(3);

@@ -47,7 +47,8 @@ RetType alt_init() {
         return RET_ERROR;
     }
 
-    // TODO set sea level??
+    // okay to use blocking function here
+    altimeter.setSeaPressure(altimeter.getPressure());
 
     return RET_OK;
 }

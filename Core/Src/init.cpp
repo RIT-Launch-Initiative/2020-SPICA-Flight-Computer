@@ -19,6 +19,10 @@ int init() {
     // init LED for idle tasks
     HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
 
+    // make a little buzz buzz before we initialize everything
+    HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
+    HAL_Delay(500);
+    
     // initialize all modules
     // try to initialize all of them 5 times and if they fail print an error when in debug mode
 
@@ -114,10 +118,7 @@ int init() {
         #endif
     }
 
-
-    // make a little buzz buzz when we're ready
-    HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
-    HAL_Delay(500);
+    // turn off the buzzer, initialization done
     HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
 
     // idle task

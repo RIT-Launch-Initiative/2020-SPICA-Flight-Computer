@@ -18,7 +18,7 @@
 
 // open a new 'file' in the file system for a new flight
 // can have ONE file opened globally
-// NOTE; will open a new file everytime it's called
+// NOTE; will open a new file every time it's called
 int fs_open();
 
 // close the globally opened file

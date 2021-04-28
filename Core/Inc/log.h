@@ -11,7 +11,7 @@
 // amount of time between each log
 // currently set to the speed the IMU updates (10 Hz)
 // pull this back down later
-#define LOG_PERIOD 100 // ms
+#define LOG_PERIOD 1000 // ms
 
 // initialize the logger
 RetType log_init();

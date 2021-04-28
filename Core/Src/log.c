@@ -8,6 +8,7 @@
 #include "lib/fs/fs.h"
 
 // XBEE UART file descriptor (as in lib/sys.c)
+// should be 3 TODO
 #define XBEE_FD 1
 
 tiny_task_t log_task;
@@ -23,7 +24,7 @@ header_t header;
 // function called in the log task
 void log_update(tiny_task_t* task) {
     log_packet.uptime = ts_systime();
-    _write(XBEE_FD, (char*)&header, sizeof(header_t));
+    _write(XBEE_FD, (char*)&header, 4); // TODO temp fix, dont send the size!
     _write(XBEE_FD, (char*)&log_packet, sizeof(log_packet_t));
 
     #ifdef DEBUG

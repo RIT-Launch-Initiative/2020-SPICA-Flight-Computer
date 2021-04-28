@@ -141,7 +141,13 @@ int fs_wipe() {
         flash_open = 1;
     }
 
+    // TODO do we need this?
     W25qxx_EraseChip();
+
+    // zero the first page
+    uint8_t buffer[PAGE_SIZE];
+    memset(buffer, 0, PAGE_SIZE);
+    W25qxx_WritePage(buffer, 0, 0, PAGE_SIZE);
 
     return FS_OK;
 }

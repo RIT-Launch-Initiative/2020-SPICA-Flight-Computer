@@ -43,7 +43,7 @@ void imu_update(tiny_task_t* task) {
 
     raw_ax = imu.calcAccel(imu.ax);
     raw_ay = imu.calcAccel(imu.ay);
-    raw_az = imu.calcAccel(imu.ay);
+    raw_az = imu.calcAccel(imu.az);
 
     raw_gx = imu.calcGyro(imu.gx);
     raw_gy = imu.calcGyro(imu.gy);

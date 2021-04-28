@@ -11,7 +11,11 @@
 // amount of time between each log
 // currently set to the speed the IMU updates (10 Hz)
 // pull this back down later
-#define LOG_PERIOD 1000 // ms
+#define LOG_PERIOD 100 // ms
+
+// XBEE UART file descriptor (as in lib/sys.c)
+// should be 3 TODO
+#define XBEE_FD 1
 
 // initialize the logger
 RetType log_init();

@@ -7,10 +7,6 @@
 #include "lib/common/common.h" // _write
 #include "lib/fs/fs.h"
 
-// XBEE UART file descriptor (as in lib/sys.c)
-// should be 3 TODO
-#define XBEE_FD 1
-
 tiny_task_t log_task;
 log_packet_t log_packet;
 

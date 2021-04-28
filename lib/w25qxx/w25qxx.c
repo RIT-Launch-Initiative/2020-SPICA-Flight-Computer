@@ -219,7 +219,7 @@ bool	W25qxx_Init(void)
 				printf("w25qxx Unknown ID: %08x\r\n", id);
 				#endif
             // this is a quick and dirty hack to work with a cypress s25fl064labmfm010
-            w25qxx.ID=0;
+            w25qxx.ID=W25Q64;
             w25qxx.BlockCount=128;
 			//w25qxx.Lock=0;
 			//return false;

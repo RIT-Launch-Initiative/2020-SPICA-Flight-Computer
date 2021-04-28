@@ -49,7 +49,7 @@ RetType gps_init() {
         #ifdef DEBUG
         printf("gps init failed!\r\n");
         #endif
-        
+
         return RET_ERROR;
     }
     return RET_OK;
@@ -78,8 +78,16 @@ void gps_update(tiny_task_t* task) {
     parse_gga((char*)buff, &gps_packet, i);
 
     // copy the data out to the logger
-    log_packet.latitude = ((float)gps_packet.latitude.degrees) + (gps_packet.latitude.minutes / 60);
-    log_packet.longitude = ((float)gps_packet.longitude.degrees) + (gps_packet.longitude.minutes / 60);
+    float lat_mul = 1.0;
+    if(gps_packet.latitude.degrees < 0) {
+        lat_mul = -1.0;
+    }
+    float long_mul = 1.0;
+    if(gps_packet.longitude.degrees < 0) {
+        long_mul = -1.0;
+    }
+    log_packet.latitude = ((float)gps_packet.latitude.degrees) + (gps_packet.latitude.minutes / 60 * lat_mul);
+    log_packet.longitude = ((float)gps_packet.longitude.degrees) + (gps_packet.longitude.minutes / 60 * long_mul);
     log_packet.gps_alt = gps_packet.altitude;
     log_packet.gps_time = gps_packet.time;
     log_packet.gps_fix = gps_packet.fix;
@@ -89,7 +97,7 @@ void gps_update(tiny_task_t* task) {
     #ifdef DEBUG
     printf("%s\n", buff);
 
-    printf("time: %i, lat: %i.%f, long: %i.%f, alt: %f, fix: %i, sats: %i\r\n\r\n", gps_packet.time,
+    printf("time: %i, lat: %io%f\", long: %io%f\", alt: %f, fix: %i, sats: %i\r\n\r\n", gps_packet.time,
             gps_packet.latitude.degrees, gps_packet.latitude.minutes, gps_packet.longitude.degrees,
             gps_packet.longitude.minutes, gps_packet.altitude, gps_packet.fix, gps_packet.sat_count);
     #endif

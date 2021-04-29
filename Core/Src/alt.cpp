@@ -13,6 +13,7 @@ tiny_task_t alt_task;
 MPL3115A2 altimeter;
 
 float raw_alt;
+float base_alt;
 
 void alt_update(tiny_task_t* task) {
     if(altimeter.getAltitude(&raw_alt) != RET_OK) {
@@ -23,11 +24,11 @@ void alt_update(tiny_task_t* task) {
         // TODO send the altitude to a filter
         // for now just blast it out the debug UART
         #ifdef DEBUG
-        printf("alt: %f ft\r\n", raw_alt * METERS_TO_FEET);
+        printf("alt: %f ft\r\n", (raw_alt - base_alt) * METERS_TO_FEET);
         #endif
 
         // copy the altitude out to the logger
-        log_packet.alt1 = raw_alt * METERS_TO_FEET;
+        log_packet.alt1 = (raw_alt - base_alt) * METERS_TO_FEET;
 
         task->start_time += ALT_SAMPLE_PERIOD;
     }
@@ -48,7 +49,7 @@ RetType alt_init() {
     }
 
     // okay to use blocking function here
-    altimeter.setSeaPressure(altimeter.getPressure());
+    base_alt = altimeter.getAltitude();
 
     return RET_OK;
 }

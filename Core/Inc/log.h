@@ -14,8 +14,8 @@
 #define LOG_PERIOD 100 // ms
 
 // XBEE UART file descriptor (as in lib/sys.c)
-// should be 3 TODO
-#define XBEE_FD 1
+// TODO should be 0, but currently using a hack
+#define XBEE_FD 0
 
 // initialize the logger
 RetType log_init();

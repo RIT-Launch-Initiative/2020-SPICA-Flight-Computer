@@ -28,7 +28,7 @@ void log_update(tiny_task_t* task) {
     #endif
 
     // write to nonvolatile storage on flash chip
-    fs_write((uint8_t*)&log_packet, sizeof(log_packet_t));
+    // fs_write((uint8_t*)&log_packet, sizeof(log_packet_t));
 
     task->start_time += LOG_PERIOD;
 }
@@ -50,10 +50,10 @@ RetType log_init() {
     // zero the packet
     memset(&log_packet, 0, sizeof(log_packet_t));
 
-    if(FS_OK != fs_open()) {
-        printf("FLASH failed to initialize\r\n");
-        return RET_OK; // still want to run the XBee logging
-    }
+    // if(FS_OK != fs_open()) {
+    //      printf("FLASH failed to initialize\r\n");
+    //      return RET_OK; // still want to run the XBee logging
+    //  }
 
     return RET_OK;
 }

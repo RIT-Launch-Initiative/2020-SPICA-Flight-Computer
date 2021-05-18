@@ -12,6 +12,9 @@ extern "C" {
     #include "lib/common/common.h"
     #include "gps.h"
     #include "log.h"
+
+    // TODO remove
+    // #include "lib/w25qxx/w25qxx.h"
 }
 
 
@@ -36,6 +39,12 @@ int init() {
         }
         HAL_Delay(500);
     }
+
+    // TODO remove
+    // printf("starting\r\n");
+    // W25qxx_Init();
+    // W25qxx_EraseSector(0);
+    // while(1) {};
 
     if(good_init) {
         good_init = 0;

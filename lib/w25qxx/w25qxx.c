@@ -114,6 +114,7 @@ void W25qxx_WriteStatusRegister(uint8_t	SelectStatusRegister_1_2_3,uint8_t Data)
 //###################################################################################################################
 void W25qxx_WaitForWriteEnd(void)
 {
+	printf("write end\r\n");
 	W25qxx_Delay(1);
 	HAL_GPIO_WritePin(_W25QXX_CS_GPIO,_W25QXX_CS_PIN,GPIO_PIN_RESET);
 	W25qxx_Spi(0x05);

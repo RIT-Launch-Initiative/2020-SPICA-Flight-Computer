@@ -29,7 +29,8 @@ gga_packet_t gps_packet;
 
 // local data
 uint8_t gps_char;
-unsigned char lines = 0;
+// 'lines' needs to be fetched from memory every read, updated by both task loop and ISR
+volatile unsigned char lines = 0;
 uint8_t rb_buff[GPS_BUFFER_SIZE];
 ringbuff_t rb;
 

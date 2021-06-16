@@ -30,6 +30,7 @@ gga_packet_t gps_packet;
 // local data
 uint8_t gps_char;
 // 'lines' needs to be fetched from memory every read, updated by both task loop and ISR
+// after looking at the assembly it reloads it anyways (using ldrb), but best to change in case the compiler changes
 volatile unsigned char lines = 0;
 uint8_t rb_buff[GPS_BUFFER_SIZE];
 ringbuff_t rb;

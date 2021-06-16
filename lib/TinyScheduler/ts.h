@@ -20,6 +20,8 @@
 extern long int ts_systime();
 
 // priority level
+// can increase the values of these since priorities are incremented
+// each time a task is skipped
 typedef enum {
     IDLE_PRIORITY, SLEEP_PRIORITY, LOW_PRIORITY, MEDIUM_PRIORITY, HIGH_PRIORITY
 } priority_t;

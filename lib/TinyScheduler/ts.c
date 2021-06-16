@@ -59,7 +59,7 @@ void ts_schedule(int* stop_var, int stop_cond) {
                     if(best_ttid == -1) {
                         best_ttid = i;
                     } else if(tasks[i]->priority > tasks[best_ttid]->priority) {
-                        tasks[best_ttid]->priority++;
+                        tasks[best_ttid]->priority++; // NOTE: not checking for overflow here! Beware!
                         best_ttid = i;
                     }
                 }

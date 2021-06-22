@@ -68,21 +68,21 @@ lib/TinyScheduler/ts.c \
 lib/H3LIS100DL/H3LIS100DL.c \
 lib/queue/queue.c \
 lib/ringbuff/ringbuff.c \
-Core/Src/gps.c \
-Core/Src/log.c \
+src/gps.c \
+src/log.c \
 lib/MTK3339/MTK.c \
 lib/fs/fs.c \
 #lib/w25qxx/w25qxx.c \
 
 # CPP sources
 CPP_SOURCES = \
-Core/Src/init.cpp \
 Core/Src/main.cpp \
-Core/Src/tasks.cpp \
+src/init.cpp \
+src/tasks.cpp \
 lib/MPL3115A2/MPL3115A2.cpp \
 lib/LSM9DS1/LSM9DS1.cpp \
-Core/Src/imu.cpp \
-Core/Src/alt.cpp \
+src/imu.cpp \
+src/alt.cpp \
 #lib/MS5607/MS5607.cpp \
 
 # ASM sources
@@ -146,7 +146,8 @@ C_INCLUDES =  \
 -IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
 -IDrivers/CMSIS/Include \
 -IDrivers/CMSIS/Include \
--I.
+-I. \
+-Iinclude
 
 
 # compile gcc flags

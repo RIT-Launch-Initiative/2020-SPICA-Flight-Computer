@@ -80,6 +80,8 @@ int fs_write(uint8_t* data, uint16_t len) {
         return FS_NOT_OPEN;
     }
 
+    // TODO if len is multiple pages, only writes rest of current page + one page to the buffer
+    // will actually cause a memory overrun
     if(len + buffer_index > PAGE_SIZE) {
         // copy what we can to the buffer
         uint16_t empty = PAGE_SIZE - buffer_index;
@@ -124,7 +126,7 @@ int fs_dump_files(FILE* fd) {
     uint32_t page = 1;
     uint8_t buff[PAGE_SIZE];
     for(int i = 0; i < MAX_NUM_FILES; i++) {
-        fprintf(fd, "FILE %i:\n", i);
+        fprintf(fd, "FILE %i(%lu bytes):\n", i, config_page[i]);
         for(int j = 0; j < config_page[i]; j++) {
             W25qxx_ReadPage(buff, page++, 0, PAGE_SIZE);
             fwrite(buff, 1, PAGE_SIZE, fd); // write out the file descriptor

@@ -80,6 +80,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 
 
 // RX complete, called by the HAL UART IRQ
+// TODO probably want to make each uart have a function handle for other things to set
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if(huart == &huart1) {
         // TODO (debug uart)

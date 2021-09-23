@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
 typedef struct {
-    int head; // first byte occupied at beginning
-    int tail; // first byte free at end
+    int head; // first byte occupied at beginning (aka first byte we can read from)
+    int tail; // first byte free at end (aka first byte we can write to)
     uint8_t* ptr; // ptr to beginning of buffer
     int max; // max size
 } ringbuff_t;
